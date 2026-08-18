@@ -1,0 +1,6 @@
+{
+  "name": "QSR Self-Ordering Kiosk",
+  "description": "Touchscreen self-ordering kiosk UI for Quick Service Restaurants with category navigation, food selection, real-time cart persistence, checkout, and order summary.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

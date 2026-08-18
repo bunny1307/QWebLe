@@ -1,0 +1,609 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>QSR Admin</title>
+  <link rel="stylesheet" href="/static/admin.css?v={{ range(1, 999999) | random }}">
+</head>
+
+<body>
+
+  {% if page == 'login' %}
+
+  <main class="login-shell">
+    <form class="card login-card" method="post" action="{{ url_for('login') }}">
+
+      <h1>Restaurant Admin</h1>
+      <p>Local restaurant management.</p>
+
+      {% if login_error %}
+        <div class="alert error">{{ login_error }}</div>
+      {% endif %}
+
+      <label>
+        Username
+        <input
+          name="username"
+          autocomplete="username"
+          required
+        >
+      </label>
+
+      <label>
+        Password
+        <input
+          name="password"
+          type="password"
+          autocomplete="current-password"
+          required
+        >
+      </label>
+
+      <button class="primary" type="submit" style="padding: 12px; font-size: 15px; margin-top: 8px;">
+        Sign in
+      </button>
+
+    </form>
+  </main>
+
+  {% else %}
+
+  <div class="app-layout">
+
+    <!-- =========================================================
+         SIDEBAR
+    ========================================================== -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>QSR Admin</h1>
+        <p>Dashboard</p>
+      </div>
+
+      <nav class="sidebar-nav">
+
+        <button class="nav-item" data-tab="settingsTab" aria-label="User Settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          User Settings
+        </button>
+
+        <button class="nav-item" data-tab="categoriesTab" aria-label="Categories">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Categories
+        </button>
+
+        <button class="nav-item" data-tab="itemsTab" aria-label="Menu Items">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+          Items
+        </button>
+
+        <button class="nav-item active" data-tab="cashOrdersTab" aria-label="Cash Orders">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+            <line x1="1" y1="10" x2="23" y2="10"></line>
+          </svg>
+          Cash Orders
+        </button>
+
+        <button class="nav-item" data-tab="completedTab" aria-label="Completed Orders">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          Completed Orders
+        </button>
+
+      </nav>
+
+      <div class="sidebar-footer">
+        <button id="logoutBtn" style="width: 100%; justify-content: center; background: rgba(255,255,255,0.1); border: none; color: #fff;">
+          Logout
+        </button>
+      </div>
+    </aside>
+
+    <div class="main-content">
+      <!-- =========================================================
+           TOP BAR
+      ========================================================== -->
+      <header class="topbar">
+        <div>
+          <h2 id="pageTitle">Cash Orders</h2>
+          <span id="saveState">Loading…</span>
+        </div>
+
+        <div class="top-actions">
+          <button id="reloadBtn">
+            Sync Data
+          </button>
+          <button id="exportBtn">
+            Export
+          </button>
+          <label class="file-button">
+            Restore
+            <input
+              id="restoreInput"
+              type="file"
+              accept="application/json"
+            >
+          </label>
+        </div>
+      </header>
+
+      <main class="page">
+
+        <!-- =======================================================
+             TAB 1: USER SETTINGS
+        ======================================================== -->
+        <div id="settingsTab" class="tab-pane">
+
+          <div class="section-head" style="margin-bottom: 32px; border-bottom: none;">
+            <div>
+              <h2 style="font-size: 24px; margin-bottom: 4px;">User Settings</h2>
+              <p class="muted">Configure restaurant details and system integrations.</p>
+            </div>
+          </div>
+
+          <!-- RESTAURANT PROFILE -->
+          <section class="card unit-card" id="unitSection">
+            <div class="section-head">
+              <div>
+                <h2>Restaurant Profile</h2>
+                <p class="muted">Basic information displayed on bills and storefront.</p>
+              </div>
+              <button id="editUnitBtn" type="button" class="primary">
+                Edit Profile
+              </button>
+            </div>
+
+            <div id="unitEditForm" hidden>
+              <div class="grid two">
+                <label>
+                  Restaurant Name
+                  <input id="unitName" placeholder="e.g. Tasty Bites">
+                </label>
+                <label>
+                  Phone Number
+                  <input id="unitPhone" placeholder="+91 98765 43210">
+                </label>
+                <label>
+                  Email Address
+                  <input id="unitEmail" type="email" placeholder="contact@restaurant.com">
+                </label>
+                <label>
+                  Physical Address
+                  <input id="unitAddress" placeholder="123 Main St, City">
+                </label>
+                <label>
+                  Currency Code
+                  <input id="currencyCode" maxlength="3" placeholder="INR">
+                </label>
+                <label>
+                  Currency Symbol
+                  <input id="currencySymbol" maxlength="8" placeholder="₹">
+                </label>
+              </div>
+
+              <label style="margin-top: 16px;">
+                Description / Tagline
+                <textarea id="unitDescription" rows="3" placeholder="A short description of your restaurant..."></textarea>
+              </label>
+
+              <div class="unit-edit-actions" style="margin-top: 24px; border-top: 1px dashed var(--border); padding-top: 16px;">
+                <button id="cancelUnitBtn" type="button">Cancel</button>
+                <button id="saveUnitBtn" type="button" class="primary">Save Changes</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- INTEGRATIONS -->
+          <section class="card">
+            <div class="section-head">
+              <div>
+                <h2>Integrations</h2>
+                <p class="muted">Connect with other modules.</p>
+              </div>
+            </div>
+
+            <div class="lite-settings" style="margin-bottom: 16px;">
+              <div>
+                <strong>Kitchen Display System (KDS)</strong>
+                <p>When enabled, customer orders can be sent directly to the Kitchen QSR screen.</p>
+              </div>
+              <label class="switch">
+                <input id="kitchenToggle" type="checkbox">
+                <span></span>
+              </label>
+            </div>
+
+            <div class="lite-settings" style="background: transparent; border: 1px dashed var(--border);">
+              <div>
+                <strong>Kitchen QSR Screen</strong>
+                <p>Open the standalone kitchen display screen in a new tab.</p>
+              </div>
+              <a class="button-link" href="/kitchen" target="_blank" rel="noopener">
+                Launch Kitchen Screen ↗
+              </a>
+            </div>
+          </section>
+
+        </div>
+
+
+        <!-- =======================================================
+             TAB 2: CATEGORIES
+        ======================================================== -->
+        <div id="categoriesTab" class="tab-pane">
+
+          <div class="section-head" style="margin-bottom: 32px; border-bottom: none;">
+            <div>
+              <h2 style="font-size: 24px; margin-bottom: 4px;">Categories</h2>
+              <p class="muted">Group your menu items (e.g. Beverages, Mains, Desserts).</p>
+            </div>
+          </div>
+
+          <section class="card">
+            <div class="section-head">
+              <div>
+                <h2>All Categories</h2>
+                <p class="muted">Create and manage the categories shown on the customer menu.</p>
+              </div>
+              <button id="addCategoryBtn" class="primary">
+                + Add Category
+              </button>
+            </div>
+            <div id="categories" style="display: flex; flex-direction: column; gap: 8px;"></div>
+          </section>
+
+        </div>
+
+
+        <!-- =======================================================
+             TAB 3: ITEMS  (Menu Items management)
+        ======================================================== -->
+        <div id="itemsTab" class="tab-pane">
+
+          <div class="section-head" style="margin-bottom: 32px; border-bottom: none;">
+            <div>
+              <h2 style="font-size: 24px; margin-bottom: 4px;">Menu Items</h2>
+              <p class="muted">Manage all individual products available for customers to order.</p>
+            </div>
+          </div>
+
+          <section class="card">
+            <div class="section-head">
+              <div>
+                <h2>All Items</h2>
+                <p class="muted">Edit names, prices, availability, and categories. Changes reflect immediately on the customer menu.</p>
+              </div>
+              <button id="addItemBtn" class="primary">
+                + Add Item
+              </button>
+            </div>
+
+            <div class="filters">
+              <input id="search" placeholder="Search items by name..." style="flex: 2;">
+              <select id="categoryFilter" style="flex: 1;"></select>
+            </div>
+            <div id="items" style="display: flex; flex-direction: column; gap: 8px;"></div>
+          </section>
+
+        </div>
+
+
+        <!-- =======================================================
+             TAB 4: CASH ORDERS  (default active — Live Kanban)
+        ======================================================== -->
+        <div id="cashOrdersTab" class="tab-pane active">
+
+          <section class="card" id="ordersSection" style="background: transparent; border: none; box-shadow: none; padding: 0;">
+            <div class="section-head" style="border-bottom: none;">
+              <div>
+                <h2 style="font-size: 24px; margin-bottom: 4px;">Live Orders</h2>
+                <p class="muted">Track and advance orders through the kitchen workflow in real time. Orders move from left to right.</p>
+              </div>
+              <button id="refreshOrdersBtn" class="primary">
+                Refresh Orders
+              </button>
+            </div>
+
+            <div class="orders-grid">
+
+              <!-- NEW -->
+              <div class="order-group">
+                <div class="order-group-head new-col">
+                  <h3>&#128278; New</h3>
+                  <span id="newOrdersCount" class="col-count">0</span>
+                </div>
+                <div id="newOrders" class="orders-list">
+                  <div class="empty">No new orders.</div>
+                </div>
+              </div>
+
+              <!-- KITCHEN -->
+              <div class="order-group">
+                <div class="order-group-head kitchen-col">
+                  <h3>&#128293; Kitchen</h3>
+                  <span id="sentOrdersCount" class="col-count">0</span>
+                </div>
+                <div id="sentOrders" class="orders-list">
+                  <div class="empty">No orders in kitchen.</div>
+                </div>
+              </div>
+
+              <!-- PREPARING -->
+              <div class="order-group">
+                <div class="order-group-head preparing-col">
+                  <h3>&#128992; Preparing</h3>
+                  <span id="preparingOrdersCount" class="col-count">0</span>
+                </div>
+                <div id="preparingOrders" class="orders-list">
+                  <div class="empty">No orders preparing.</div>
+                </div>
+              </div>
+
+              <!-- READY -->
+              <div class="order-group">
+                <div class="order-group-head ready-col">
+                  <h3>&#9989; Ready</h3>
+                  <span id="readyOrdersCount" class="col-count">0</span>
+                </div>
+                <div id="readyOrders" class="orders-list">
+                  <div class="empty">No ready orders.</div>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+
+        </div><!-- /cashOrdersTab -->
+
+
+        <!-- =======================================================
+             TAB 5: COMPLETED ORDERS
+        ======================================================== -->
+        <div id="completedTab" class="tab-pane">
+
+          <div class="section-head" style="margin-bottom: 24px; border-bottom: none;">
+            <div>
+              <h2 style="font-size: 24px; margin-bottom: 4px;">Completed Orders</h2>
+              <p class="muted">Full history of delivered orders. Use the filters below to search and narrow results.</p>
+            </div>
+          </div>
+
+          <!-- FILTER BAR -->
+          <div class="filter-bar">
+            <div class="filter-group">
+              <label>Search</label>
+              <input id="completedSearch" placeholder="Token # or Order ID…">
+            </div>
+            <div class="filter-group">
+              <label>Payment Type</label>
+              <select id="completedPayment">
+                <option value="">All</option>
+                <option value="CASH">Cash</option>
+                <option value="UPI">UPI</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>From Date</label>
+              <input id="completedFrom" type="date">
+            </div>
+            <div class="filter-group">
+              <label>To Date</label>
+              <input id="completedTo" type="date">
+            </div>
+            <div class="filter-group">
+              <label>Sort By Time</label>
+              <select id="completedSort">
+                <option value="desc">Newest First</option>
+                <option value="asc">Oldest First</option>
+              </select>
+            </div>
+            <div class="filter-actions">
+              <button id="applyFiltersBtn" class="primary">Apply Filters</button>
+              <button id="clearFiltersBtn">Clear</button>
+            </div>
+          </div>
+
+          <!-- RESULTS META -->
+          <div id="completedOrdersMeta" class="table-meta"></div>
+
+          <!-- ORDERS TABLE -->
+          <div class="table-wrapper">
+            <table class="orders-table" id="completedOrdersTable">
+              <thead>
+                <tr>
+                  <th>Token #</th>
+                  <th>Order ID</th>
+                  <th>Date &amp; Time</th>
+                  <th>Items Ordered</th>
+                  <th>Total</th>
+                  <th>Payment</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="completedOrdersBody">
+                <tr>
+                  <td colspan="7" class="table-empty">Select the Completed Orders tab to load data.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+
+  <!-- =========================================================
+       CATEGORY DIALOG
+  ========================================================== -->
+  <dialog id="categoryDialog">
+    <form method="dialog" id="categoryForm" class="dialog-form">
+      <h3 id="categoryTitle">Add category</h3>
+      <input id="categoryId" type="hidden">
+
+      <div class="grid two">
+        <label style="grid-column: span 2;">
+          Category Name
+          <input id="categoryName" maxlength="120" placeholder="e.g. Main Course" required>
+        </label>
+        
+        <label>
+          Display Order
+          <input id="categoryOrder" type="number" min="0" step="1" value="0">
+        </label>
+        
+        <label>
+          Status
+          <div class="check-row" style="height: 42px; display: flex; align-items: center; padding: 0 16px;">
+            <label class="check">
+              <input id="categoryActive" type="checkbox" checked>
+              Active
+            </label>
+          </div>
+        </label>
+      </div>
+
+      <label style="margin-top: 16px;">
+        Description (Optional)
+        <textarea id="categoryDescription" maxlength="500" placeholder="A brief description of this category..."></textarea>
+      </label>
+
+      <div class="form-group-title">Image</div>
+      <label>
+        Image URL
+        <input id="categoryImage" maxlength="255" placeholder="https://... or /media/...webp">
+      </label>
+      
+      <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 8px; background: #f8fafc; padding: 12px; border: 1px dashed var(--border); border-radius: 8px;">
+        <span style="font-size: 12px; font-weight: 600; color: var(--text-main);">Or upload from computer</span>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input id="categoryImageFile" type="file" accept="image/png, image/jpeg, image/jpg, image/webp" style="flex-grow: 1; padding: 6px 8px; background: #fff;">
+          <button id="categoryUploadBtn" type="button" style="padding: 8px 16px;">Upload</button>
+        </div>
+        <span id="categoryUploadStatus" style="font-size: 12px; color: var(--text-muted);"></span>
+      </div>
+
+      <div class="dialog-actions">
+        <button value="cancel" id="cancelCategoryBtn" type="button">Cancel</button>
+        <button id="saveCategoryBtn" value="default" class="primary">Save Category</button>
+      </div>
+    </form>
+  </dialog>
+
+
+  <!-- =========================================================
+       ITEM DIALOG
+  ========================================================== -->
+  <dialog id="itemDialog">
+    <form method="dialog" id="itemForm" class="dialog-form">
+      <h3 id="itemTitle">Add item</h3>
+      <input id="itemId" type="hidden">
+
+      <div class="grid two">
+        <label>
+          Item Name
+          <input id="itemName" maxlength="160" placeholder="e.g. Cheeseburger" required>
+        </label>
+        
+        <label>
+          Category
+          <select id="itemCategory" required></select>
+        </label>
+        
+        <label>
+          Price
+          <div style="position: relative; display: flex; align-items: center;">
+            <span style="position: absolute; left: 14px; color: var(--text-muted); font-weight: 600;" id="dialogCurrencySymbol">₹</span>
+            <input id="itemPrice" inputmode="decimal" pattern="^\d+(\.\d{1,2})?$" required style="padding-left: 32px;">
+          </div>
+        </label>
+
+        <label>
+          Display Order
+          <input id="itemOrder" type="number" min="0" step="1" value="0">
+        </label>
+      </div>
+
+      <label style="margin-top: 16px;">
+        Description
+        <textarea id="itemDescription" maxlength="1000" placeholder="Ingredients, preparation details..."></textarea>
+      </label>
+
+      <div class="form-group-title">Tags &amp; Availability</div>
+      <div class="check-row">
+        <label class="check">
+          <input id="itemVeg" type="checkbox">
+          Vegetarian
+        </label>
+        <label class="check">
+          <input id="itemAvailable" type="checkbox" checked>
+          In Stock
+        </label>
+        <label class="check">
+          <input id="itemActive" type="checkbox" checked>
+          Visible on Menu
+        </label>
+      </div>
+
+      <div class="form-group-title">Image</div>
+      <label>
+        Image URL
+        <input id="itemImage" maxlength="255" placeholder="https://... or /media/...webp">
+      </label>
+      
+      <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 8px; background: #f8fafc; padding: 12px; border: 1px dashed var(--border); border-radius: 8px;">
+        <span style="font-size: 12px; font-weight: 600; color: var(--text-main);">Or upload from computer</span>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <input id="itemImageFile" type="file" accept="image/png, image/jpeg, image/jpg, image/webp" style="flex-grow: 1; padding: 6px 8px; background: #fff;">
+          <button id="itemUploadBtn" type="button" style="padding: 8px 16px;">Upload</button>
+        </div>
+        <span id="itemUploadStatus" style="font-size: 12px; color: var(--text-muted);"></span>
+      </div>
+
+      <div class="dialog-actions">
+        <button value="cancel" id="cancelItemBtn" type="button">Cancel</button>
+        <button id="saveItemBtn" value="default" class="primary">Save Item</button>
+      </div>
+    </form>
+  </dialog>
+
+
+  <!-- =========================================================
+       MESSAGE DIALOG
+  ========================================================== -->
+  <dialog id="messageDialog">
+    <div class="dialog-form" style="width: 400px; text-align: center; padding: 40px 32px;">
+      <h3 id="messageTitle" style="margin-bottom: 12px;"></h3>
+      <p id="messageBody" style="color: var(--text-muted); line-height: 1.5; margin-bottom: 32px;"></p>
+      <button id="messageOk" class="primary" style="width: 100%; padding: 12px;">
+        OK
+      </button>
+    </div>
+  </dialog>
+
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="/static/admin.js?v={{ range(1, 999999) | random }}" defer></script>
+
+  {% endif %}
+
+</body>
+</html>

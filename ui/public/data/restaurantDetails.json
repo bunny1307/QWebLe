@@ -1,0 +1,9 @@
+{
+  "restaurant": {
+    "name": "Flavor Junction QSR",
+    "tagline": "Fresh, Fast & Flame-Grilled",
+    "logo": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=200&q=80",
+    "currencySymbol": "₹",
+    "taxPercentage": 5
+  }
+}
