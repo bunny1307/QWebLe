@@ -50,17 +50,22 @@ export const FoodCard: React.FC<FoodCardProps> = React.memo(({
       <div>
         {/* Image & Badges */}
         <div className="relative h-48 w-full bg-gray-100 overflow-hidden">
-          <img
-            src={food.image}
-            alt={food.name}
-            className={`w-full h-full object-cover transition-transform duration-300 ${
-              !isAvailable ? 'grayscale opacity-75' : 'hover:scale-105'
-            }`}
-            onError={(e) => {
-              (e.target as HTMLImageElement).src =
-                'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
-            }}
-          />
+          {food.image ? (
+            <img
+              src={food.image}
+              alt={food.name}
+              className={`w-full h-full object-cover transition-transform duration-300 ${
+                !isAvailable ? 'grayscale opacity-75' : 'hover:scale-105'
+              }`}
+              onError={(e) => {
+                (e.target as HTMLElement).style.display = 'none';
+              }}
+            />
+          ) : (
+            <div className="w-full h-full bg-slate-50 flex items-center justify-center">
+              <ShoppingBag className="w-16 h-16 text-slate-200" />
+            </div>
+          )}
 
           {/* Veg / Non-Veg Indicator */}
           {food.isVeg !== undefined && (

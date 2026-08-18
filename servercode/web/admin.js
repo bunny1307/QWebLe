@@ -2492,3 +2492,51 @@ $("clearFiltersBtn")?.addEventListener("click", () => {
 
     loadCompletedOrders({});
 });
+
+/* =========================================================
+   SECURITY / PASSWORD
+   ========================================================= */
+
+const changePasswordForm = $('changePasswordForm');
+if (changePasswordForm) {
+    changePasswordForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const currentPassword = $('currentPassword').value;
+        const newPassword = $('newPassword').value;
+        
+        // Validation
+        if (newPassword.length < 8) {
+            return openMsg('Validation Error', 'New password must be at least 8 characters long.');
+        }
+        if (!/[A-Z]/.test(newPassword)) {
+            return openMsg('Validation Error', 'New password must contain at least one uppercase letter.');
+        }
+        if (!/[0-9]/.test(newPassword)) {
+            return openMsg('Validation Error', 'New password must contain at least one number.');
+        }
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(newPassword)) {
+            return openMsg('Validation Error', 'New password must contain at least one special character.');
+        }
+        
+        try {
+            const res = await api('/api/admin/change-password', {
+                method: 'POST',
+                body: {
+                    current_password: currentPassword,
+                    new_password: newPassword
+                }
+            });
+            
+            if (res.ok) {
+                toast('Password updated successfully!');
+                changePasswordForm.reset();
+            } else {
+                openMsg('Error', res.error?.message || 'Failed to update password.');
+            }
+        } catch (err) {
+            console.error(err);
+            openMsg('Error', 'Failed to update password. Please check your connection.');
+        }
+    });
+}

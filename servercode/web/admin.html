@@ -238,6 +238,29 @@
             </div>
           </section>
 
+          <!-- SECURITY -->
+          <section class="card" style="margin-top: 32px;">
+            <div class="section-head">
+              <div>
+                <h2>Security</h2>
+                <p class="muted">Change your administrator password.</p>
+              </div>
+            </div>
+
+            <form id="changePasswordForm" class="edit-form" style="max-width: 400px; display: flex; flex-direction: column; gap: 16px;">
+              <label>
+                Current Password:
+                <input type="password" id="currentPassword" required />
+              </label>
+              <label>
+                New Password:
+                <input type="password" id="newPassword" required />
+                <p class="muted" style="font-size: 11px; margin-top: 4px; line-height: 1.4;">Must be at least 8 characters long and contain at least 1 uppercase letter, 1 number, and 1 special character.</p>
+              </label>
+              <button type="submit" class="primary" style="align-self: flex-start; margin-top: 8px;">Update Password</button>
+            </form>
+          </section>
+
         </div>
 
 

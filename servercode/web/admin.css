@@ -170,8 +170,7 @@ body {
 }
 
 .topbar span {
-    font-size: 13px;
-    color: var(--text-muted);
+    display: none;
 }
 
 .top-actions {
@@ -181,8 +180,8 @@ body {
 }
 
 .page {
-    padding: 32px;
-    max-width: 1200px;
+    padding: clamp(16px, 3vw, 40px);
+    max-width: 1600px;
     margin: 0 auto;
     width: 100%;
 }
@@ -216,7 +215,7 @@ body {
 .section-head {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 20px;
     border-bottom: 1px solid var(--border);
     padding-bottom: 16px;

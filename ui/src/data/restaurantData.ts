@@ -224,8 +224,7 @@ export function transformDBData(
         priceMinor: price * 100,
 
         image:
-          item.image_path ||
-          getFoodFallbackImage(item.name, catName),
+          item.image_path || undefined,
 
         available: isAvailable,
 

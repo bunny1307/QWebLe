@@ -35,7 +35,7 @@ from flask import (
 )
 from PIL import Image, UnidentifiedImageError
 from werkzeug.exceptions import HTTPException
-from werkzeug.security import check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.utils import secure_filename
 
 
@@ -961,10 +961,10 @@ def security_headers(response):
     ] = (
         "default-src 'self'; "
         "script-src 'self' https://checkout.razorpay.com; "
-        "style-src 'self' https://checkout.razorpay.com; "
-        "img-src 'self' data: blob: https://checkout.razorpay.com; "
+        "style-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://fonts.googleapis.com; "
+        "img-src 'self' data: blob: https://checkout.razorpay.com https://images.unsplash.com; "
         "connect-src 'self' https://api.razorpay.com https://lumberjack.razorpay.com; "
-        "font-src 'self'; "
+        "font-src 'self' https://fonts.gstatic.com; "
         "frame-src https://api.razorpay.com; "
         "object-src 'none'; "
         "base-uri 'self'; "
@@ -1141,6 +1141,47 @@ def logout():
     return jsonify({
         "ok": True
     })
+
+# ============================================================
+# CHANGE PASSWORD
+# ============================================================
+
+@app.post("/api/admin/change-password")
+@require_auth
+@api_handler
+def change_password():
+    require_csrf()
+    data = request.json or {}
+    current_pass = data.get("current_password", "")
+    new_pass = data.get("new_password", "")
+    
+    global ADMIN_PASSWORD_HASH
+    current_admin_hash = os.environ.get("ADMIN_PASSWORD_HASH", ADMIN_PASSWORD_HASH).strip()
+    
+    if not check_password_hash(current_admin_hash, current_pass):
+        return jsonify({"ok": False, "error": {"message": "Current password is incorrect."}}), 400
+        
+    if not new_pass:
+        return jsonify({"ok": False, "error": {"message": "New password cannot be empty."}}), 400
+        
+    new_hash = generate_password_hash(new_pass)
+    
+    env_path = BASE_DIR / ".env"
+    if env_path.exists():
+        with open(env_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        import re
+        if "ADMIN_PASSWORD_HASH=" in content:
+            content = re.sub(r"^ADMIN_PASSWORD_HASH=.*$", f"ADMIN_PASSWORD_HASH={new_hash}", content, flags=re.MULTILINE)
+        else:
+            content += f"\nADMIN_PASSWORD_HASH={new_hash}\n"
+        with open(env_path, "w", encoding="utf-8") as f:
+            f.write(content)
+            
+    os.environ["ADMIN_PASSWORD_HASH"] = new_hash
+    ADMIN_PASSWORD_HASH = new_hash
+    
+    return jsonify({"ok": True, "message": "Password updated successfully."})
 
 
 # ============================================================

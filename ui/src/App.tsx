@@ -260,7 +260,31 @@ export default function App() {
       />
 
       <main className="grow flex flex-col lg:flex-row w-full max-w-[1920px] mx-auto min-h-[calc(100vh-100px)]">
-        <div className="flex-1 min-w-0 pb-12">
+        
+        {currentScreen === 'FOOD_PAGE' && (
+          <div className="hidden lg:flex flex-col justify-center pl-6 pr-2 py-4 h-full shrink-0">
+            <aside className="w-[110px] bg-white border border-gray-200 shadow-lg rounded-2xl overflow-y-auto max-h-[80vh] flex flex-col hide-scrollbar">
+              <div className="flex flex-col divide-y divide-gray-100">
+                {restaurantData.categories.map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => handleSelectCategory(cat)}
+                    className={`flex flex-col items-center justify-center gap-2 p-4 transition-all text-center ${
+                      selectedCategory?.id === cat.id 
+                        ? 'bg-orange-50 text-[#FF4F18] shadow-inner' 
+                        : 'hover:bg-gray-50 text-slate-600'
+                    }`}
+                  >
+                    <span className="text-3xl drop-shadow-sm transition-transform group-hover:scale-110">{cat.icon}</span>
+                    <span className="font-bold text-[10px] leading-tight uppercase tracking-wider">{cat.name}</span>
+                  </button>
+                ))}
+              </div>
+            </aside>
+          </div>
+        )}
+
+        <div className="flex-1 min-w-0 pb-12 bg-[#F9FAFB]">
           {currentScreen === 'CATEGORY_PAGE' && (
             <CategoryList categories={restaurantData.categories} foods={restaurantData.foods} onSelectCategory={handleSelectCategory} />
           )}

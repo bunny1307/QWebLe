@@ -95,15 +95,20 @@ export const CartSidebar: React.FC<CartSidebarProps> = ({
               >
                 {/* Item Thumbnail & Details */}
                 <div className="flex items-center gap-3 min-w-0 flex-1">
-                  <img
-                    src={item.food.image}
-                    alt={item.food.name}
-                    className="w-12 h-12 rounded-xl object-cover border border-gray-200 shrink-0 bg-gray-100"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
-                    }}
-                  />
+                  {item.food.image ? (
+                    <img
+                      src={item.food.image}
+                      alt={item.food.name}
+                      className="w-12 h-12 rounded-xl object-cover border border-gray-200 shrink-0 bg-gray-100"
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-xl border border-gray-200 shrink-0 bg-slate-50 flex items-center justify-center">
+                      <ShoppingBag className="w-5 h-5 text-slate-300" />
+                    </div>
+                  )}
                   <div className="min-w-0 flex-1">
                     <h4 className="text-sm font-bold text-slate-900 truncate leading-snug">
                       {item.food.name}
