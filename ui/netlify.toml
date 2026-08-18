@@ -1,0 +1,23 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Proxy rules for your Flask backend
+# Uncomment and change the URL once you host your Python server on Render/Railway!
+# [[redirects]]
+#   from = "/api/*"
+#   to = "https://your-backend-url.onrender.com/api/:splat"
+#   status = 200
+#   force = true
+#
+# [[redirects]]
+#   from = "/media/*"
+#   to = "https://your-backend-url.onrender.com/media/:splat"
+#   status = 200
+#   force = true
+
+# SPA fallback rule (Must be the last rule)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
