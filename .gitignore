@@ -7,5 +7,3 @@ venv/
 env/
 .venv/
 .pytest_cache/
-servercode/backups/
-servercode/media/
