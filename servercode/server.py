@@ -14,6 +14,7 @@ import sys
 import base64
 import urllib.request
 import urllib.error
+from urllib.parse import urlparse, unquote
 
 from datetime import datetime, timezone
 from functools import wraps
@@ -161,30 +162,40 @@ app.config.update(
 # MYSQL CONFIG
 # ============================================================
 
-MYSQL_CONFIG = {
-    "host": os.environ.get(
-        "MYSQL_HOST",
-        "127.0.0.1",
-    ),
-    "port": int(
-        os.environ.get(
-            "MYSQL_PORT",
-            "3306",
-        )
-    ),
-    "database": os.environ.get(
-        "MYSQL_DATABASE",
-        "qsr",
-    ),
-    "user": os.environ.get(
-        "MYSQL_USER",
-        "root",
-    ),
-    "password": os.environ.get(
-        "MYSQL_PASSWORD",
-        "",
-    ),
-}
+def get_mysql_config() -> dict[str, Any]:
+    """Parse MySQL configuration supporting both DATABASE_URL and individual vars."""
+    db_url = os.environ.get("DATABASE_URL") or os.environ.get("MYSQL_URL")
+    if db_url:
+        parsed = urlparse(db_url)
+        config: dict[str, Any] = {
+            "host": parsed.hostname or "127.0.0.1",
+            "port": int(parsed.port or 3306),
+            "user": unquote(parsed.username or "root"),
+            "password": unquote(parsed.password or ""),
+            "database": (parsed.path or "/qsr").lstrip("/"),
+            "connect_timeout": int(os.environ.get("MYSQL_CONNECT_TIMEOUT", "10")),
+            "autocommit": False,
+        }
+    else:
+        config = {
+            "host": os.environ.get("MYSQL_HOST", "127.0.0.1"),
+            "port": int(os.environ.get("MYSQL_PORT", "3306")),
+            "database": os.environ.get("MYSQL_DATABASE", "qsr"),
+            "user": os.environ.get("MYSQL_USER", "root"),
+            "password": os.environ.get("MYSQL_PASSWORD", ""),
+            "connect_timeout": int(os.environ.get("MYSQL_CONNECT_TIMEOUT", "10")),
+            "autocommit": False,
+        }
+
+    if os.environ.get("MYSQL_SSL_DISABLED", "").lower() == "true":
+        config["ssl_disabled"] = True
+    elif os.environ.get("MYSQL_SSL_CA"):
+        config["ssl_ca"] = os.environ.get("MYSQL_SSL_CA")
+
+    return config
+
+
+MYSQL_CONFIG = get_mysql_config()
 
 
 # ============================================================
@@ -930,11 +941,36 @@ def api_handler(fn):
 
 
 # ============================================================
-# SECURITY HEADERS
+# CORS & SECURITY HEADERS
 # ============================================================
+
+def _apply_cors_headers(headers):
+    origin = request.headers.get("Origin")
+    cors_allowed = os.environ.get("CORS_ALLOWED_ORIGINS", "*").strip()
+
+    if cors_allowed == "*":
+        headers["Access-Control-Allow-Origin"] = "*"
+    elif origin and (cors_allowed == origin or origin in [o.strip() for o in cors_allowed.split(",") if o.strip()]):
+        headers["Access-Control-Allow-Origin"] = origin
+        headers["Access-Control-Allow-Credentials"] = "true"
+        headers["Vary"] = "Origin"
+
+    headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization, X-CSRF-Token, X-Requested-With, Cache-Control"
+    headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, PATCH, DELETE, OPTIONS"
+
+
+@app.before_request
+def handle_options_preflight():
+    if request.method == "OPTIONS":
+        res = app.make_default_options_response()
+        _apply_cors_headers(res.headers)
+        return res
+
 
 @app.after_request
 def security_headers(response):
+
+    _apply_cors_headers(response.headers)
 
     response.headers[
         "X-Content-Type-Options"
@@ -960,16 +996,15 @@ def security_headers(response):
         "Content-Security-Policy"
     ] = (
         "default-src 'self'; "
-        "script-src 'self' https://checkout.razorpay.com; "
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://checkout.razorpay.com; "
         "style-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://fonts.googleapis.com; "
-        "img-src 'self' data: blob: https://checkout.razorpay.com https://images.unsplash.com; "
-        "connect-src 'self' https://api.razorpay.com https://lumberjack.razorpay.com; "
-        "font-src 'self' https://fonts.gstatic.com; "
-        "frame-src https://api.razorpay.com; "
+        "img-src 'self' data: blob: https:; "
+        "connect-src 'self' https: http:; "
+        "font-src 'self' data: https://fonts.gstatic.com; "
+        "frame-src 'self' https://api.razorpay.com; "
         "object-src 'none'; "
         "base-uri 'self'; "
-        "form-action 'self'; "
-        "frame-ancestors 'none'"
+        "form-action 'self';"
     )
 
     return response
@@ -1203,6 +1238,101 @@ def kitchen_page():
         "kitchen.html",
         page="kitchen",
     )
+
+# ============================================================
+# PUBLIC MENU API (For Customer App / Netlify / Kiosks)
+# ============================================================
+
+@app.get("/api/public/menu")
+@api_handler
+def public_menu():
+    """Return active restaurant unit info, categories, and items for customer app."""
+    conn = db_connect()
+    try:
+        cur = conn.cursor()
+        unit = get_single_unit(cur)
+        categories = fetch_all(
+            cur,
+            """
+            SELECT
+                id,
+                name,
+                description,
+                image_path,
+                display_order,
+                active,
+                updated_at
+            FROM categories
+            WHERE active = 1
+            ORDER BY display_order, name
+            """,
+        )
+        category_cols = [
+            "id",
+            "name",
+            "description",
+            "image_path",
+            "display_order",
+            "active",
+            "updated_at",
+        ]
+
+        items = fetch_all(
+            cur,
+            """
+            SELECT
+                id,
+                category_id,
+                name,
+                description,
+                price,
+                image_path,
+                is_veg,
+                available,
+                active,
+                display_order,
+                updated_at
+            FROM items
+            WHERE active = 1
+            ORDER BY category_id, display_order, name
+            """,
+        )
+        item_cols = [
+            "id",
+            "category_id",
+            "name",
+            "description",
+            "price",
+            "image_path",
+            "is_veg",
+            "available",
+            "active",
+            "display_order",
+            "updated_at",
+        ]
+
+        cat_list = [
+            row_to_dict(r, category_cols)
+            for r in categories
+        ]
+
+        item_list = []
+        for r in items:
+            d = row_to_dict(r, item_cols)
+            d["price"] = float(d["price"])
+            item_list.append(d)
+
+        return jsonify({
+            "ok": True,
+            "unit": unit,
+            "categories": cat_list,
+            "items": item_list,
+            "server_time": now_iso(),
+        })
+
+    finally:
+        conn.close()
+
 
 # ============================================================
 # BOOTSTRAP
@@ -4249,8 +4379,9 @@ def admin_completed_orders():
 
 
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
     app.run(
         host="0.0.0.0",
-        port=5000,
+        port=port,
         debug=False
     )

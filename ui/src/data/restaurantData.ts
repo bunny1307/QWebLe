@@ -139,6 +139,23 @@ export function resolveCurrencySymbol(
   return '₹';
 }
 
+export function getApiBaseUrl(): string {
+  const envUrl = (import.meta as any).env?.VITE_API_URL || '';
+  return envUrl.replace(/\/+$/, '');
+}
+
+export function resolveMediaUrl(path?: string | null): string | undefined {
+  if (!path) return undefined;
+  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
+    return path;
+  }
+  const base = getApiBaseUrl();
+  if (base && path.startsWith('/')) {
+    return `${base}${path}`;
+  }
+  return path;
+}
+
 // Transform raw database data into the application domain model
 export function transformDBData(
   rawCategories: DBCategory[],
@@ -157,7 +174,7 @@ export function transformDBData(
     phone: primaryUnit?.phone || null,
     email: primaryUnit?.email || null,
     address: primaryUnit?.address || null,
-    logo: primaryUnit?.logo_path || '',
+    logo: resolveMediaUrl(primaryUnit?.logo_path) || '',
     currencyCode: primaryUnit?.currency_code || 'INR',
     currencySymbol: resolveCurrencySymbol(
       primaryUnit?.currency_symbol,
@@ -180,7 +197,7 @@ export function transformDBData(
       id: c.id,
       name: c.name,
       description: c.description || undefined,
-      image: c.image_path || undefined,
+      image: resolveMediaUrl(c.image_path) || undefined,
       icon: getCategoryIcon(c.name),
       displayOrder: c.display_order,
       active: c.active === 1,
@@ -199,8 +216,6 @@ export function transformDBData(
         (a.display_order ?? 0) - (b.display_order ?? 0)
     )
     .map((item) => {
-      const catName = categoryNameMap.get(item.category_id);
-
       const isVeg =
         item.is_veg === 1 || item.is_veg === true;
 
@@ -223,8 +238,7 @@ export function transformDBData(
         price,
         priceMinor: price * 100,
 
-        image:
-          item.image_path || undefined,
+        image: resolveMediaUrl(item.image_path) || undefined,
 
         available: isAvailable,
 
@@ -244,20 +258,37 @@ export function transformDBData(
   };
 }
 
-/*
- * SINGLE SOURCE OF TRUTH
- *
- * React loads restaurant data ONLY from:
- *
- * /data/fromdb_categories.json
- * /data/fromdb_items.json
- * /data/fromdb_units.json
- *
- * Do NOT add fallback URLs.
- * Do NOT import JSON files from src/data.
- * Do NOT use bundled/static restaurant data.
+/**
+ * Loads restaurant data live from the cloud backend (/api/public/menu),
+ * with graceful fallback to bundled static data (/data/fromdb_*.json).
  */
 export async function fetchDBData(): Promise<RestaurantData> {
+  const apiBase = getApiBaseUrl();
+  const menuApiUrl = `${apiBase}/api/public/menu?t=${Date.now()}`;
+
+  try {
+    const menuResponse = await fetch(menuApiUrl, {
+      cache: 'no-store',
+      headers: {
+        'Accept': 'application/json',
+      },
+    });
+
+    if (menuResponse.ok) {
+      const data = await menuResponse.json();
+      if (data && data.ok && Array.isArray(data.categories) && Array.isArray(data.items)) {
+        return transformDBData(
+          data.categories as DBCategory[],
+          data.items as DBItem[],
+          data.unit ? [data.unit as DBUnit] : []
+        );
+      }
+    }
+  } catch (error) {
+    console.warn('Live /api/public/menu request failed, falling back to static /data/ JSON:', error);
+  }
+
+  // Fallback to static JSON
   const t = Date.now();
   const categoriesUrl = `/data/fromdb_categories.json?t=${t}`;
   const itemsUrl = `/data/fromdb_items.json?t=${t}`;

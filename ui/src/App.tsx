@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { RestaurantData, Category, FoodItem, CartItem, ScreenType, PreparedOrder } from './types';
-import { fetchDBData } from './data/restaurantData';
+import { fetchDBData, getApiBaseUrl } from './data/restaurantData';
 import { Header } from './components/Header';
 import { CategoryList } from './components/CategoryList';
 import { FoodGrid } from './components/FoodGrid';
@@ -39,6 +39,8 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState<ScreenType>('CATEGORY_PAGE');
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [preparedOrder, setPreparedOrder] = useState<PreparedOrder | null>(null);
+
+  const apiBase = getApiBaseUrl();
 
   // Keep a ref so Razorpay callbacks can always access latest cart
   const cartRef = useRef(cart);
@@ -105,7 +107,7 @@ export default function App() {
   const handleCashPayment = async (customerName?: string) => {
     if (!cart.length) return;
 
-    const response = await fetch('/api/orders/prepare', {
+    const response = await fetch(`${apiBase}/api/orders/prepare`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -134,7 +136,7 @@ export default function App() {
     await loadRazorpayScript();
 
     // 2. Create a Razorpay order on our server
-    const createResp = await fetch('/api/orders/create-razorpay-order', {
+    const createResp = await fetch(`${apiBase}/api/orders/create-razorpay-order`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -166,7 +168,7 @@ export default function App() {
         // ── Payment success ──────────────────────────────────
         handler: async (response: Record<string, string>) => {
           try {
-            const verifyResp = await fetch('/api/orders/verify-upi-payment', {
+            const verifyResp = await fetch(`${apiBase}/api/orders/verify-upi-payment`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
