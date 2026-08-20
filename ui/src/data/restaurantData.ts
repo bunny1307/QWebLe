@@ -311,7 +311,8 @@ export async function fetchDBData(): Promise<RestaurantData> {
       },
     });
 
-    if (menuResponse.ok) {
+    const contentType = menuResponse.headers.get('content-type') || '';
+    if (menuResponse.ok && contentType.includes('application/json')) {
       const data = await menuResponse.json();
       if (data && data.ok && Array.isArray(data.categories) && Array.isArray(data.items)) {
         return transformDBData(
@@ -320,6 +321,8 @@ export async function fetchDBData(): Promise<RestaurantData> {
           data.unit ? [data.unit as DBUnit] : []
         );
       }
+    } else if (menuResponse.ok) {
+      console.warn('Live /api/public/menu returned HTML instead of JSON. Ensure VITE_API_URL is set to your Render backend in Netlify.');
     }
   } catch (error) {
     console.warn('Live /api/public/menu request failed, falling back to static /data/ JSON:', error);
