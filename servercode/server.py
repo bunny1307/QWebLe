@@ -464,14 +464,141 @@ def ensure_lite_order_schema(conn):
         cur.close()
 
 
-# Run schema migration once at startup
-try:
-    _startup_conn = db_connect()
-    ensure_lite_order_schema(_startup_conn)
-    _startup_conn.close()
-    print("[STARTUP] Schema migration check completed.")
-except Exception as _startup_err:
-    print(f"[STARTUP] Schema migration warning: {_startup_err}")
+def auto_bootstrap_database():
+    """Automatically create database, tables, and seed initial records on AWS RDS or fresh MySQL."""
+    raw_config = dict(get_mysql_config())
+    target_db = raw_config.pop("database", "qsr")
+
+    # Step 1: Ensure database exists
+    try:
+        server_conn = mysql.connector.connect(**raw_config)
+        cur = server_conn.cursor()
+        cur.execute(f"CREATE DATABASE IF NOT EXISTS `{target_db}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
+        server_conn.commit()
+        cur.close()
+        server_conn.close()
+        print(f"[BOOTSTRAP] Database `{target_db}` verified/created.")
+    except Exception as e:
+        print(f"[BOOTSTRAP] Database creation check note: {e}")
+
+    # Step 2: Ensure schema tables exist
+    try:
+        conn = db_connect()
+        cur = conn.cursor(dictionary=True)
+
+        schema_file = BASE_DIR / "schema.sql"
+        if schema_file.is_file():
+            with open(schema_file, "r", encoding="utf-8") as f:
+                sql_script = f.read()
+
+            statements = []
+            current_stmt = []
+            for line in sql_script.splitlines():
+                clean = line.strip()
+                if not clean or clean.startswith("--") or clean.startswith("/*"):
+                    continue
+                current_stmt.append(line)
+                if clean.endswith(";"):
+                    statements.append("\n".join(current_stmt))
+                    current_stmt = []
+
+            for stmt in statements:
+                s = stmt.strip()
+                if not s or s.upper().startswith("CREATE DATABASE") or s.upper().startswith("USE "):
+                    continue
+                try:
+                    cur.execute(s)
+                except Exception:
+                    pass
+            conn.commit()
+
+        # Step 3: Seed initial unit if empty
+        cur.execute("SELECT COUNT(*) AS cnt FROM units")
+        unit_count = cur.fetchone()["cnt"]
+        if unit_count == 0:
+            unit_id = str(uuid.uuid4())
+            cur.execute(
+                """
+                INSERT INTO units (id, name, description, active, currency_code, currency_symbol)
+                VALUES (%s, %s, %s, TRUE, 'INR', '₹')
+                """,
+                (unit_id, "QSR Express", "Fresh & Delicious Self-Ordering"),
+            )
+            conn.commit()
+
+        # Step 4: Seed categories if empty
+        cur.execute("SELECT COUNT(*) AS cnt FROM categories")
+        cat_count = cur.fetchone()["cnt"]
+        if cat_count == 0:
+            cats_file = BASE_DIR.parent / "ui" / "public" / "data" / "fromdb_categories.json"
+            if cats_file.is_file():
+                try:
+                    with open(cats_file, "r", encoding="utf-8") as f:
+                        cats_data = json.load(f)
+                    for c in cats_data:
+                        img = c.get("image_path")
+                        if img and "media" in str(img):
+                            img = "/media/" + str(img).split("media")[-1].replace("\\", "/").lstrip("/")
+                        else:
+                            img = None
+                        cur.execute(
+                            """
+                            INSERT IGNORE INTO categories (id, name, description, image_path, display_order, active)
+                            VALUES (%s, %s, %s, %s, %s, %s)
+                            """,
+                            (c.get("id") or str(uuid.uuid4()), c.get("name"), c.get("description"), img, c.get("display_order", 0), c.get("active", 1)),
+                        )
+                    conn.commit()
+                except Exception as seed_cat_err:
+                    print(f"[BOOTSTRAP] Note seeding categories: {seed_cat_err}")
+
+        # Step 5: Seed items if empty
+        cur.execute("SELECT COUNT(*) AS cnt FROM items")
+        item_count = cur.fetchone()["cnt"]
+        if item_count == 0:
+            items_file = BASE_DIR.parent / "ui" / "public" / "data" / "fromdb_items.json"
+            if items_file.is_file():
+                try:
+                    with open(items_file, "r", encoding="utf-8") as f:
+                        items_data = json.load(f)
+                    for item in items_data:
+                        img = item.get("image_path")
+                        if img and "media" in str(img):
+                            img = "/media/" + str(img).split("media")[-1].replace("\\", "/").lstrip("/")
+                        else:
+                            img = None
+                        cur.execute(
+                            """
+                            INSERT IGNORE INTO items (id, category_id, name, description, price, image_path, is_veg, available, active, display_order)
+                            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                            """,
+                            (
+                                item.get("id") or str(uuid.uuid4()),
+                                item.get("category_id"),
+                                item.get("name"),
+                                item.get("description"),
+                                float(item.get("price", 0)),
+                                img,
+                                bool(item.get("is_veg", 0)),
+                                bool(item.get("available", 1)),
+                                bool(item.get("active", 1)),
+                                int(item.get("display_order", 0)),
+                            ),
+                        )
+                    conn.commit()
+                except Exception as seed_item_err:
+                    print(f"[BOOTSTRAP] Note seeding items: {seed_item_err}")
+
+        ensure_lite_order_schema(conn)
+        cur.close()
+        conn.close()
+        print("[BOOTSTRAP] Database schema and initial data auto-bootstrap completed successfully!")
+    except Exception as e:
+        print(f"[BOOTSTRAP] Auto-bootstrap note: {e}")
+
+
+# Run automated bootstrap at startup
+auto_bootstrap_database()
 
 
 # ============================================================
