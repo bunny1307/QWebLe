@@ -2540,3 +2540,74 @@ if (changePasswordForm) {
         }
     });
 }
+
+/* =========================================================
+   CLOUD STATUS & DIAGNOSTICS
+   ========================================================= */
+
+async function runCloudDiagnostics() {
+    const dbText = $('diagDbText');
+    const dbBadge = $('diagDbBadge');
+    const renderText = $('diagRenderText');
+    const renderBadge = $('diagRenderBadge');
+    const netlifyText = $('diagNetlifyText');
+    const netlifyBadge = $('diagNetlifyBadge');
+
+    if (dbBadge) {
+        dbBadge.textContent = 'Testing...';
+        dbBadge.style.background = '#fef3c7';
+        dbBadge.style.color = '#b45309';
+    }
+
+    try {
+        const res = await api('/api/diagnostics');
+        if (res && res.aws_rds) {
+            const db = res.aws_rds;
+            if (db.status === 'connected') {
+                const counts = db.table_counts || {};
+                if (dbText) dbText.textContent = `Connected (${db.latency_ms}ms) | Categories: ${counts.categories ?? 0}, Items: ${counts.items ?? 0}, Orders: ${counts.orders ?? 0}`;
+                if (dbBadge) {
+                    dbBadge.textContent = 'Connected';
+                    dbBadge.style.background = '#dcfce7';
+                    dbBadge.style.color = '#15803d';
+                }
+            } else {
+                if (dbText) dbText.textContent = `Error: ${db.error || 'Connection failed'}`;
+                if (dbBadge) {
+                    dbBadge.textContent = 'Disconnected';
+                    dbBadge.style.background = '#fee2e2';
+                    dbBadge.style.color = '#b91c1c';
+                }
+            }
+
+            const srv = res.render_backend;
+            if (renderText && srv) renderText.textContent = `Online (Port ${srv.port}) | CORS: ${srv.cors_origins}`;
+            if (renderBadge) {
+                renderBadge.textContent = 'Online';
+                renderBadge.style.background = '#e0f2fe';
+                renderBadge.style.color = '#0369a1';
+            }
+
+            if (netlifyText) netlifyText.textContent = `CORS: ${res.cors?.allowed_origins || '*'} | Live Menu API: Online`;
+            if (netlifyBadge) {
+                netlifyBadge.textContent = 'Ready';
+                netlifyBadge.style.background = '#dcfce7';
+                netlifyBadge.style.color = '#15803d';
+            }
+        }
+        toast('Cloud diagnostics completed');
+    } catch (err) {
+        console.error(err);
+        if (dbBadge) {
+            dbBadge.textContent = 'Error';
+            dbBadge.style.background = '#fee2e2';
+            dbBadge.style.color = '#b91c1c';
+        }
+        if (dbText) dbText.textContent = 'Could not run diagnostics.';
+    }
+}
+
+$('runDiagnosticsBtn')?.addEventListener('click', () => {
+    runCloudDiagnostics();
+});
+

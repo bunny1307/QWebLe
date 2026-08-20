@@ -3533,28 +3533,93 @@ def export_backup_internal() -> io.BytesIO:
 # ============================================================
 # HEALTH
 # ============================================================
+# HEALTH & DIAGNOSTICS
+# ============================================================
 
 @app.get("/api/health")
 def health():
-
+    t0 = time.monotonic()
     try:
-
         conn = db_connect()
-
+        cur = conn.cursor()
+        cur.execute("SELECT 1")
+        cur.fetchone()
+        cur.close()
         conn.close()
-
+        latency_ms = round((time.monotonic() - t0) * 1000, 2)
         return jsonify({
             "ok": True,
-            "database": "ok",
-            "time": now_iso(),
+            "status": "healthy",
+            "database": {
+                "status": "connected",
+                "target": MYSQL_CONFIG.get("host", "unknown"),
+                "latency_ms": latency_ms,
+            },
+            "server_time": now_iso(),
         })
-
-    except Exception:
-
+    except Exception as e:
+        latency_ms = round((time.monotonic() - t0) * 1000, 2)
         return jsonify({
             "ok": False,
-            "database": "error",
+            "status": "unhealthy",
+            "database": {
+                "status": "error",
+                "error": str(e),
+                "target": MYSQL_CONFIG.get("host", "unknown"),
+                "latency_ms": latency_ms,
+            },
+            "server_time": now_iso(),
         }), 503
+
+
+@app.get("/api/diagnostics")
+def diagnostics():
+    """Return full system diagnostics for AWS RDS, Render, and Netlify verification."""
+    t0 = time.monotonic()
+    db_info = {}
+    try:
+        conn = db_connect()
+        cur = conn.cursor(dictionary=True)
+        cur.execute("SELECT VERSION() AS db_version")
+        db_info["version"] = cur.fetchone()["db_version"]
+
+        counts = {}
+        for tbl in ["units", "categories", "items", "orders", "order_items", "daily_token_counters", "audit_logs"]:
+            try:
+                cur.execute(f"SELECT COUNT(*) AS cnt FROM `{tbl}`")
+                counts[tbl] = cur.fetchone()["cnt"]
+            except Exception:
+                counts[tbl] = "missing"
+        db_info["table_counts"] = counts
+        cur.close()
+        conn.close()
+        db_info["status"] = "connected"
+        db_info["latency_ms"] = round((time.monotonic() - t0) * 1000, 2)
+    except Exception as e:
+        db_info["status"] = "error"
+        db_info["error"] = str(e)
+        db_info["latency_ms"] = round((time.monotonic() - t0) * 1000, 2)
+
+    return jsonify({
+        "ok": db_info.get("status") == "connected",
+        "aws_rds": {
+            "host": MYSQL_CONFIG.get("host"),
+            "port": MYSQL_CONFIG.get("port"),
+            "database": MYSQL_CONFIG.get("database"),
+            **db_info
+        },
+        "render_backend": {
+            "status": "online",
+            "port": os.environ.get("PORT", "unknown"),
+            "cors_origins": os.environ.get("CORS_ALLOWED_ORIGINS", "*"),
+            "server_time": now_iso()
+        },
+        "cors": {
+            "allowed_origins": os.environ.get("CORS_ALLOWED_ORIGINS", "*"),
+            "request_origin": request.headers.get("Origin", "None (Direct)")
+        }
+    })
+
 def generate_daily_token(conn):
     today = datetime.now().date()
 

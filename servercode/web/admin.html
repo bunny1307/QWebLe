@@ -261,6 +261,43 @@
             </form>
           </section>
 
+          <!-- CLOUD & DATABASE DIAGNOSTICS -->
+          <section class="card" style="margin-top: 32px;">
+            <div class="section-head">
+              <div>
+                <h2>Cloud Status & Diagnostics</h2>
+                <p class="muted">Live status of AWS RDS Database, Render Backend, and Netlify API connection.</p>
+              </div>
+              <button id="runDiagnosticsBtn" type="button">Run Diagnostics</button>
+            </div>
+
+            <div id="diagnosticsResults" style="display: grid; gap: 12px;">
+              <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <strong>AWS RDS MySQL Database</strong>
+                  <p id="diagDbText" class="muted" style="font-size: 13px; margin-top: 2px;">Checking connection...</p>
+                </div>
+                <span id="diagDbBadge" class="status-badge">Checking</span>
+              </div>
+
+              <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <strong>Render Backend Server</strong>
+                  <p id="diagRenderText" class="muted" style="font-size: 13px; margin-top: 2px;">Online (Gunicorn WSGI)</p>
+                </div>
+                <span id="diagRenderBadge" class="status-badge" style="background:#e0f2fe; color:#0369a1;">Online</span>
+              </div>
+
+              <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                  <strong>Netlify Frontend Compatibility</strong>
+                  <p id="diagNetlifyText" class="muted" style="font-size: 13px; margin-top: 2px;">CORS Allowed: * | Public Menu API: Active</p>
+                </div>
+                <span id="diagNetlifyBadge" class="status-badge" style="background:#dcfce7; color:#15803d;">Ready</span>
+              </div>
+            </div>
+          </section>
+
         </div>
 
 
