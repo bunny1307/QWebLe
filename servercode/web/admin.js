@@ -792,6 +792,12 @@ async function saveUnit() {
    ========================================================= */
 
 async function saveCategory() {
+    const fileInput = $("categoryImageFile");
+    if (fileInput?.files?.[0]) {
+        await uploadFile(fileInput.files[0], "categoryImage", "categoryUploadStatus");
+        fileInput.value = "";
+    }
+
     const id =
         $("categoryId")?.value?.trim() || "";
 
@@ -803,7 +809,7 @@ async function saveCategory() {
             $("categoryDescription")?.value?.trim() || "",
 
         image_path:
-            $("categoryImage")?.value?.trim() || "",
+            $("categoryImage")?.value?.trim() || null,
 
         display_order:
             getNumberValue("categoryOrder", 0),
@@ -845,6 +851,12 @@ async function saveCategory() {
    ========================================================= */
 
 async function saveItem() {
+    const fileInput = $("itemImageFile");
+    if (fileInput?.files?.[0]) {
+        await uploadFile(fileInput.files[0], "itemImage", "itemUploadStatus");
+        fileInput.value = "";
+    }
+
     const id =
         $("itemId")?.value?.trim() || "";
 
@@ -862,7 +874,7 @@ async function saveItem() {
             $("itemDescription")?.value?.trim() || "",
 
         image_path:
-            $("itemImage")?.value?.trim() || "",
+            $("itemImage")?.value?.trim() || null,
 
         display_order:
             getNumberValue("itemOrder", 0),
@@ -1471,6 +1483,13 @@ $("itemUploadBtn")?.addEventListener(
     }
 );
 
+$("itemImageFile")?.addEventListener("change", (e) => {
+    const file = e.target?.files?.[0];
+    if (file) {
+        uploadFile(file, "itemImage", "itemUploadStatus");
+    }
+});
+
 $("categoryUploadBtn")?.addEventListener(
     "click",
     () => {
@@ -1486,6 +1505,13 @@ $("categoryUploadBtn")?.addEventListener(
             });
     }
 );
+
+$("categoryImageFile")?.addEventListener("change", (e) => {
+    const file = e.target?.files?.[0];
+    if (file) {
+        uploadFile(file, "categoryImage", "categoryUploadStatus");
+    }
+});
 
 
 $("addCategoryBtn")?.addEventListener(
