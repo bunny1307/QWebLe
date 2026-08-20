@@ -249,6 +249,71 @@ TAX_PERCENTAGE = float(
 
 RAZORPAY_KEY_ID = os.environ.get("RAZORPAY_KEY_ID", "")
 RAZORPAY_KEY_SECRET = os.environ.get("RAZORPAY_KEY_SECRET", "")
+
+# ============================================================
+# AWS S3 STORAGE CONFIG & HELPERS
+# ============================================================
+
+AWS_S3_BUCKET_NAME = (
+    os.environ.get("AWS_S3_BUCKET_NAME")
+    or os.environ.get("S3_BUCKET_NAME")
+    or ""
+)
+AWS_S3_REGION = (
+    os.environ.get("AWS_S3_REGION")
+    or os.environ.get("AWS_DEFAULT_REGION")
+    or "ap-south-1"
+)
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
+AWS_CLOUDFRONT_DOMAIN = os.environ.get("AWS_CLOUDFRONT_DOMAIN", "").strip().rstrip("/")
+
+
+def get_s3_client():
+    """Return configured boto3 S3 client if credentials exist, else None."""
+    if not AWS_S3_BUCKET_NAME:
+        return None
+    try:
+        import boto3
+        if AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY:
+            return boto3.client(
+                "s3",
+                region_name=AWS_S3_REGION,
+                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+            )
+        else:
+            return boto3.client("s3", region_name=AWS_S3_REGION)
+    except Exception as e:
+        app.logger.warning("AWS S3 client init note: %s", e)
+        return None
+
+
+def upload_bytes_to_s3(buffer: io.BytesIO, filename: str, content_type: str = "image/webp") -> str | None:
+    """Upload byte buffer to AWS S3 and return public URL. Return None on failure or missing config."""
+    client = get_s3_client()
+    if not client or not AWS_S3_BUCKET_NAME:
+        return None
+    try:
+        buffer.seek(0)
+        s3_key = f"media/{filename}"
+        client.upload_fileobj(
+            buffer,
+            AWS_S3_BUCKET_NAME,
+            s3_key,
+            ExtraArgs={
+                "ContentType": content_type,
+            },
+        )
+        if AWS_CLOUDFRONT_DOMAIN:
+            domain = AWS_CLOUDFRONT_DOMAIN if AWS_CLOUDFRONT_DOMAIN.startswith("http") else f"https://{AWS_CLOUDFRONT_DOMAIN}"
+            return f"{domain}/{s3_key}"
+        return f"https://{AWS_S3_BUCKET_NAME}.s3.{AWS_S3_REGION}.amazonaws.com/{s3_key}"
+    except Exception as e:
+        app.logger.error("Failed to upload %s to AWS S3: %s", filename, e)
+        return None
+
+
 # ============================================================
 # DATABASE
 # ============================================================
@@ -2733,28 +2798,36 @@ def upload_image():
             f"Invalid image: {exc}"
         )
 
-    output_name = (
-        f"{uuid.uuid4()}.webp"
-    )
+    output_name = f"{uuid.uuid4()}.webp"
+    image.thumbnail((1600, 1600))
 
-    output_path = (
-        MEDIA_DIR / output_name
-    )
-
-    image.thumbnail(
-        (1600, 1600)
-    )
-
+    webp_buffer = io.BytesIO()
     image.save(
-        output_path,
+        webp_buffer,
         "WEBP",
         quality=88,
         method=6,
     )
+    webp_buffer.seek(0)
+
+    # 1. Attempt AWS S3 Upload if configured
+    s3_url = upload_bytes_to_s3(webp_buffer, output_name, "image/webp")
+    if s3_url:
+        return jsonify({
+            "ok": True,
+            "path": s3_url,
+            "storage": "s3",
+        })
+
+    # 2. Fallback to local MEDIA_DIR
+    output_path = MEDIA_DIR / output_name
+    with open(output_path, "wb") as f:
+        f.write(webp_buffer.getvalue())
 
     return jsonify({
         "ok": True,
         "path": f"/media/{output_name}",
+        "storage": "local",
     })
 
 
