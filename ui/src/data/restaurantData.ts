@@ -65,48 +65,6 @@ export function getCategoryIcon(name: string): string {
   return '🍽️';
 }
 
-// Fallback food image based on food/category name
-export function getFoodFallbackImage(
-  foodName: string,
-  categoryName?: string
-): string {
-  const lower = `${foodName} ${categoryName || ''}`.toLowerCase();
-
-  if (lower.includes('biryani') || lower.includes('briyani')) {
-    return 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=600&q=80';
-  }
-
-  if (lower.includes('fruit')) {
-    return 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?auto=format&fit=crop&w=600&q=80';
-  }
-
-  if (lower.includes('burger')) {
-    return 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80';
-  }
-
-  if (lower.includes('pizza')) {
-    return 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=600&q=80';
-  }
-
-  if (lower.includes('fries') || lower.includes('chips')) {
-    return 'https://images.unsplash.com/photo-1576107232684-1279f3908594?auto=format&fit=crop&w=600&q=80';
-  }
-
-  if (lower.includes('chicken')) {
-    return 'https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?auto=format&fit=crop&w=600&q=80';
-  }
-
-  if (
-    lower.includes('drink') ||
-    lower.includes('juice') ||
-    lower.includes('shake')
-  ) {
-    return 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=600&q=80';
-  }
-
-  return 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
-}
-
 // Convert minor currency units to major currency units.
 // Example: 50000 paise -> 500
 export function parsePriceMinor(priceMinor: number): number {
@@ -147,31 +105,41 @@ export function getApiBaseUrl(): string {
 export function resolveMediaUrl(path?: string | null): string | undefined {
   if (!path) return undefined;
 
-  let cleanPath = String(path).trim();
-  if (cleanPath.includes('/media/') || cleanPath.includes('\\media\\')) {
-    const filename = cleanPath.split(/[/\\]media[/\\]/).pop();
-    if (filename) {
-      cleanPath = `/media/${filename}`;
-    }
+  const cleanPath = String(path).trim();
+
+  // Reject serialization artifacts
+  if (cleanPath === 'null' || cleanPath === 'undefined' || cleanPath === '') {
+    return undefined;
   }
 
+  // Absolute URLs (S3, CloudFront, external CDN) — return as-is, never modify
   if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://') || cleanPath.startsWith('data:')) {
     return cleanPath;
   }
 
-  if (!cleanPath.startsWith('/')) {
-    cleanPath = `/${cleanPath}`;
+  // Local absolute Windows/Unix paths containing /media/ or \media\ — extract filename
+  let normalized = cleanPath;
+  if (normalized.includes('/media/') || normalized.includes('\\media\\')) {
+    const filename = normalized.split(/[/\\]media[/\\]/).pop();
+    if (filename) {
+      normalized = `/media/${filename}`;
+    }
+  }
+
+  if (!normalized.startsWith('/')) {
+    normalized = `/${normalized}`;
   }
 
   const base = getApiBaseUrl();
   if (base) {
-    return `${base}${cleanPath}`;
+    return `${base}${normalized}`;
   }
-  return cleanPath;
+  return normalized;
 }
 
 /**
- * Matches food items to available media photos by explicit path or name matching.
+ * Resolves item image: uses explicit DB path first, then falls back to
+ * name-based matching against bundled media files.
  */
 export function getItemMediaImage(itemName: string, imagePath?: string | null): string | undefined {
   if (imagePath && String(imagePath).trim() && imagePath !== 'null') {
@@ -187,8 +155,10 @@ export function getItemMediaImage(itemName: string, imagePath?: string | null): 
   if (lower.includes('lemon juice') || lower.includes('lemon joice')) return resolveMediaUrl('/media/lemon joice.jpg');
   if (lower.includes('mango juice')) return resolveMediaUrl('/media/mango juice.jpg');
   if (lower.includes('gulab') || lower.includes('julab')) return resolveMediaUrl('/media/julabjamun.jpg');
-  if (lower.includes('laddu')) return resolveMediaUrl('/media/laddu.jpg');
+  if (lower.includes('laddu') || lower.includes('ladoo')) return resolveMediaUrl('/media/laddu.jpg');
   if (lower.includes('biryani') || lower.includes('briyani')) return resolveMediaUrl('/media/biryani.jpg');
+  if (lower.includes('milkshake') || lower.includes('milk shake')) return resolveMediaUrl('/media/milkshake.jpg');
+  if (lower.includes('coffee')) return resolveMediaUrl('/media/milkshake.jpg');
 
   return undefined;
 }
