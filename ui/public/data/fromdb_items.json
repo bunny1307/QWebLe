@@ -5,13 +5,13 @@
         "name": "coffee",
         "description": null,
         "price": 100.0,
-        "image_path": "https://qweble-items-media.s3.ap-south-1.amazonaws.com/media/7da8bf14-968a-43e7-8356-07d845d67b12.webp",
+        "image_path": "https://qweble-items-media.s3.eu-north-1.amazonaws.com/media/705e5166-1e1d-4f09-96a4-a4381246522f.webp",
         "is_veg": 1,
         "available": 1,
         "active": 1,
         "display_order": 0,
         "created_at": "2026-08-20 15:19:29",
-        "updated_at": "2026-08-20 15:19:29"
+        "updated_at": "2026-08-20 16:48:12"
     },
     {
         "id": "875b1950-7fab-4a52-9de0-4e86b7adf4b9",
@@ -19,12 +19,12 @@
         "name": "milkshake",
         "description": null,
         "price": 150.0,
-        "image_path": "https://qweble-items-media.s3.ap-south-1.amazonaws.com/media/5d998ff9-6aa0-43ab-8ca3-3092dd76057b.webp",
+        "image_path": "https://qweble-items-media.s3.eu-north-1.amazonaws.com/media/e6030911-cd62-4274-8c97-1490ac09e312.webp",
         "is_veg": 1,
         "available": 1,
         "active": 1,
         "display_order": 0,
         "created_at": "2026-08-20 14:33:36",
-        "updated_at": "2026-08-20 15:20:10"
+        "updated_at": "2026-08-20 16:15:34"
     }
 ]
