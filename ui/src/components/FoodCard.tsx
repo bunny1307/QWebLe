@@ -19,6 +19,7 @@ export const FoodCard: React.FC<FoodCardProps> = React.memo(({
   onUpdateQuantity,
 }) => {
   const isAvailable = food.available !== false;
+  const [imageError, setImageError] = React.useState(false);
 
   const handleIncrement = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -50,16 +51,14 @@ export const FoodCard: React.FC<FoodCardProps> = React.memo(({
       <div>
         {/* Image & Badges */}
         <div className="relative h-48 w-full bg-gray-100 overflow-hidden">
-          {food.image ? (
+          {food.image && !imageError ? (
             <img
               src={food.image}
               alt={food.name}
               className={`w-full h-full object-cover transition-transform duration-300 ${
                 !isAvailable ? 'grayscale opacity-75' : 'hover:scale-105'
               }`}
-              onError={(e) => {
-                (e.target as HTMLElement).style.display = 'none';
-              }}
+              onError={() => setImageError(true)}
             />
           ) : (
             <div className="w-full h-full bg-slate-50 flex items-center justify-center">

@@ -146,14 +146,51 @@ export function getApiBaseUrl(): string {
 
 export function resolveMediaUrl(path?: string | null): string | undefined {
   if (!path) return undefined;
-  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) {
-    return path;
+
+  let cleanPath = String(path).trim();
+  if (cleanPath.includes('/media/') || cleanPath.includes('\\media\\')) {
+    const filename = cleanPath.split(/[/\\]media[/\\]/).pop();
+    if (filename) {
+      cleanPath = `/media/${filename}`;
+    }
   }
+
+  if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://') || cleanPath.startsWith('data:')) {
+    return cleanPath;
+  }
+
+  if (!cleanPath.startsWith('/')) {
+    cleanPath = `/${cleanPath}`;
+  }
+
   const base = getApiBaseUrl();
-  if (base && path.startsWith('/')) {
-    return `${base}${path}`;
+  if (base) {
+    return `${base}${cleanPath}`;
   }
-  return path;
+  return cleanPath;
+}
+
+/**
+ * Matches food items to available media photos by explicit path or name matching.
+ */
+export function getItemMediaImage(itemName: string, imagePath?: string | null): string | undefined {
+  if (imagePath && String(imagePath).trim() && imagePath !== 'null') {
+    return resolveMediaUrl(imagePath);
+  }
+
+  const lower = (itemName || '').toLowerCase().trim();
+  if (lower.includes('dosa')) return resolveMediaUrl('/media/dosa.jpg');
+  if (lower.includes('idli')) return resolveMediaUrl('/media/idli.jpg');
+  if (lower.includes('fried rice')) return resolveMediaUrl('/media/fried rice.jpg');
+  if (lower.includes('curd rice') || lower.includes('curdrice')) return resolveMediaUrl('/media/curdrice.jpg');
+  if (lower.includes('lemon rice')) return resolveMediaUrl('/media/lemon rice.jpg');
+  if (lower.includes('lemon juice') || lower.includes('lemon joice')) return resolveMediaUrl('/media/lemon joice.jpg');
+  if (lower.includes('mango juice')) return resolveMediaUrl('/media/mango juice.jpg');
+  if (lower.includes('gulab') || lower.includes('julab')) return resolveMediaUrl('/media/julabjamun.jpg');
+  if (lower.includes('laddu')) return resolveMediaUrl('/media/laddu.jpg');
+  if (lower.includes('biryani') || lower.includes('briyani')) return resolveMediaUrl('/media/biryani.jpg');
+
+  return undefined;
 }
 
 // Transform raw database data into the application domain model
@@ -238,7 +275,7 @@ export function transformDBData(
         price,
         priceMinor: price * 100,
 
-        image: resolveMediaUrl(item.image_path) || undefined,
+        image: getItemMediaImage(item.name, item.image_path),
 
         available: isAvailable,
 
