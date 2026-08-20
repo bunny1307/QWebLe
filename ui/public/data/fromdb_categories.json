@@ -1,52 +1,12 @@
 [
     {
-        "id": "6157462a-7a3e-45df-a8f7-3d75974cb735",
-        "name": "sweets and dessert",
-        "description": null,
-        "image_path": null,
-        "display_order": 0,
-        "active": 1,
-        "created_at": "2026-08-16 10:46:57",
-        "updated_at": "2026-08-17 13:13:24"
-    },
-    {
-        "id": "79820667-9ce9-43db-b32a-e5f956bb07fd",
-        "name": "lunch",
-        "description": null,
-        "image_path": null,
-        "display_order": 0,
-        "active": 1,
-        "created_at": "2026-08-16 10:46:57",
-        "updated_at": "2026-08-17 13:14:35"
-    },
-    {
-        "id": "8b493437-cbaa-49f8-bfbd-b2deb06cc67d",
+        "id": "e0bf604f-d0b5-4781-b160-883c688de66a",
         "name": "drinks",
         "description": null,
         "image_path": null,
         "display_order": 0,
         "active": 1,
-        "created_at": "2026-08-16 10:46:57",
-        "updated_at": "2026-08-17 13:12:54"
-    },
-    {
-        "id": "b1a1a099-3bb6-46a5-afee-60487fb49883",
-        "name": "breakfask",
-        "description": null,
-        "image_path": null,
-        "display_order": 0,
-        "active": 1,
-        "created_at": "2026-08-16 10:46:57",
-        "updated_at": "2026-08-17 13:16:19"
-    },
-    {
-        "id": "bcc790f3-a35c-4085-8c63-b85dba256beb",
-        "name": "briyani",
-        "description": "special",
-        "image_path": "D:/python/projects/QSR VERSIONS/qsr1.1/servercode/media/julabjamun.jpg",
-        "display_order": 0,
-        "active": 1,
-        "created_at": "2026-08-16 10:46:57",
-        "updated_at": "2026-08-17 13:37:27"
+        "created_at": "2026-08-20 14:33:03",
+        "updated_at": "2026-08-20 14:33:03"
     }
 ]

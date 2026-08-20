@@ -1,16 +1,16 @@
 [
     {
-        "id": "48a3541f-9737-11f1-a217-14b5cdd0f49a",
-        "name": "Soul of South",
-        "phone": null,
+        "id": "b50d21cf-9c99-11f1-b811-0e88648bf601",
+        "name": "bedhachary",
+        "phone": "+919177647831",
         "email": null,
-        "address": "1st Floor, Sujana One 210, Road No. 82, Film Nagar, Hyderabad, Telangana 500096",
+        "address": "13-4-591/25/c",
         "logo_path": null,
-        "description": "Authentic South Indian Food",
+        "description": null,
         "active": 1,
         "currency_code": "INR",
-        "currency_symbol": "₹",
-        "created_at": "2026-08-13 22:21:52",
-        "updated_at": "2026-08-17 13:09:42"
+        "currency_symbol": "\u20b9",
+        "created_at": "2026-08-20 13:19:00",
+        "updated_at": "2026-08-20 13:21:36"
     }
 ]
