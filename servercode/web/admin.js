@@ -792,57 +792,45 @@ async function saveUnit() {
    ========================================================= */
 
 async function saveCategory() {
-    const fileInput = $("categoryImageFile");
-    if (fileInput?.files?.[0]) {
-        await uploadFile(fileInput.files[0], "categoryImage", "categoryUploadStatus");
-        fileInput.value = "";
+    const saveBtn = $("saveCategoryBtn");
+    const originalText = saveBtn ? saveBtn.textContent : "Save Category";
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = "Saving...";
     }
 
-    const id =
-        $("categoryId")?.value?.trim() || "";
+    try {
+        const fileInput = $("categoryImageFile");
+        if (fileInput?.files?.[0]) {
+            await uploadFile(fileInput.files[0], "categoryImage", "categoryUploadStatus");
+            fileInput.value = "";
+        }
 
-    const body = {
-        name:
-            $("categoryName")?.value?.trim() || "",
+        const id = $("categoryId")?.value?.trim() || "";
 
-        description:
-            $("categoryDescription")?.value?.trim() || "",
+        const body = {
+            name: $("categoryName")?.value?.trim() || "",
+            description: $("categoryDescription")?.value?.trim() || "",
+            image_path: $("categoryImage")?.value?.trim() || null,
+            display_order: getNumberValue("categoryOrder", 0),
+            active: Boolean($("categoryActive")?.checked)
+        };
 
-        image_path:
-            $("categoryImage")?.value?.trim() || null,
+        if (id) {
+            await api(`/api/categories/${encodeURIComponent(id)}`, { method: "PUT", body });
+        } else {
+            await api("/api/categories", { method: "POST", body });
+        }
 
-        display_order:
-            getNumberValue("categoryOrder", 0),
-
-        active:
-            Boolean(
-                $("categoryActive")?.checked
-            )
-    };
-
-    if (id) {
-        await api(
-            `/api/categories/${encodeURIComponent(id)}`,
-            {
-                method: "PUT",
-                body
-            }
-        );
-    } else {
-        await api(
-            "/api/categories",
-            {
-                method: "POST",
-                body
-            }
-        );
+        closeDialog("categoryDialog");
+        toast("Category saved");
+        await load();
+    } finally {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = originalText;
+        }
     }
-
-    closeDialog("categoryDialog");
-
-    toast("Category saved");
-
-    await load();
 }
 
 
@@ -851,73 +839,49 @@ async function saveCategory() {
    ========================================================= */
 
 async function saveItem() {
-    const fileInput = $("itemImageFile");
-    if (fileInput?.files?.[0]) {
-        await uploadFile(fileInput.files[0], "itemImage", "itemUploadStatus");
-        fileInput.value = "";
+    const saveBtn = $("saveItemBtn");
+    const originalText = saveBtn ? saveBtn.textContent : "Save Item";
+    if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = "Saving...";
     }
 
-    const id =
-        $("itemId")?.value?.trim() || "";
+    try {
+        const fileInput = $("itemImageFile");
+        if (fileInput?.files?.[0]) {
+            await uploadFile(fileInput.files[0], "itemImage", "itemUploadStatus");
+            fileInput.value = "";
+        }
 
-    const body = {
-        name:
-            $("itemName")?.value?.trim() || "",
+        const id = $("itemId")?.value?.trim() || "";
 
-        category_id:
-            $("itemCategory")?.value?.trim() || "",
+        const body = {
+            name: $("itemName")?.value?.trim() || "",
+            category_id: $("itemCategory")?.value?.trim() || "",
+            price: $("itemPrice")?.value?.trim() || "0",
+            description: $("itemDescription")?.value?.trim() || "",
+            image_path: $("itemImage")?.value?.trim() || null,
+            display_order: getNumberValue("itemOrder", 0),
+            is_veg: Boolean($("itemVeg")?.checked),
+            available: Boolean($("itemAvailable")?.checked),
+            active: Boolean($("itemActive")?.checked)
+        };
 
-        price:
-            $("itemPrice")?.value?.trim() || "0",
+        if (id) {
+            await api(`/api/items/${encodeURIComponent(id)}`, { method: "PUT", body });
+        } else {
+            await api("/api/items", { method: "POST", body });
+        }
 
-        description:
-            $("itemDescription")?.value?.trim() || "",
-
-        image_path:
-            $("itemImage")?.value?.trim() || null,
-
-        display_order:
-            getNumberValue("itemOrder", 0),
-
-        is_veg:
-            Boolean(
-                $("itemVeg")?.checked
-            ),
-
-        available:
-            Boolean(
-                $("itemAvailable")?.checked
-            ),
-
-        active:
-            Boolean(
-                $("itemActive")?.checked
-            )
-    };
-
-    if (id) {
-        await api(
-            `/api/items/${encodeURIComponent(id)}`,
-            {
-                method: "PUT",
-                body
-            }
-        );
-    } else {
-        await api(
-            "/api/items",
-            {
-                method: "POST",
-                body
-            }
-        );
+        closeDialog("itemDialog");
+        toast("Item saved");
+        await load();
+    } finally {
+        if (saveBtn) {
+            saveBtn.disabled = false;
+            saveBtn.textContent = originalText;
+        }
     }
-
-    closeDialog("itemDialog");
-
-    toast("Item saved");
-
-    await load();
 }
 
 
