@@ -495,7 +495,7 @@ def ensure_lite_order_schema(conn):
                 """
                 ALTER TABLE orders
                 ADD COLUMN razorpay_order_id VARCHAR(64) NULL
-                AFTER total_minor
+                AFTER total
                 """
             )
 
@@ -518,7 +518,7 @@ def ensure_lite_order_schema(conn):
             cur.execute(
                 """
                 ALTER TABLE orders
-                ADD COLUMN razorpay_payment_id VARCHAR(64) NULL
+                ADD COLUMN razorpay_payment_id VARCHAR(120) NULL
                 AFTER razorpay_order_id
                 """
             )
