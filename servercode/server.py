@@ -4147,8 +4147,15 @@ def verify_upi_payment():
                 """,
                 (order_id,),
             )
-            items = cur2.fetchall()
+            raw_items = cur2.fetchall()
             cur2.close()
+            
+            items = []
+            for i in raw_items:
+                i["unit_price"] = float(i["unit_price"])
+                i["line_total"] = float(i["line_total"])
+                items.append(i)
+
             return jsonify({
                 "ok": True,
                 "order": {
@@ -4191,7 +4198,13 @@ def verify_upi_payment():
             """,
             (order_id,),
         )
-        order_items = cur.fetchall()
+        raw_order_items = cur.fetchall()
+        
+        order_items = []
+        for i in raw_order_items:
+            i["unit_price"] = float(i["unit_price"])
+            i["line_total"] = float(i["line_total"])
+            order_items.append(i)
 
         conn.commit()
 
