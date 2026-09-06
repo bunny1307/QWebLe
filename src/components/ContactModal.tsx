@@ -16,7 +16,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, def
     phone: '',
     email: '',
     outlets: '1',
-    plan: defaultPlan || 'Cloud Sync',
+    plan: defaultPlan || 'Pro',
   });
 
   if (!isOpen) return null;
@@ -122,9 +122,10 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, def
                     onChange={(e) => setFormData({ ...formData, plan: e.target.value })}
                     className="clay-input w-full px-3 py-2.5 text-sm bg-white"
                   >
-                    <option value="Base Tier">Base Tier</option>
-                    <option value="Cloud Sync">Cloud Sync (Recommended)</option>
-                    <option value="AI Analytics">AI Analytics</option>
+                    <option value="Base">Base Plan (₹599/mo)</option>
+                    <option value="Pro">Pro Plan (₹699/mo - Recommended)</option>
+                    <option value="Ultra">Ultra Plan (₹899/mo)</option>
+                    <option value="Custom Website Development">Custom Website Development & Maintenance</option>
                   </select>
                 </div>
               </div>

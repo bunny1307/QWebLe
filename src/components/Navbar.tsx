@@ -57,6 +57,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenDemo, onOpenContact }) => 
             <a href="#cloud-sync" className="text-sm font-semibold text-slate-600 hover:text-teal-600 transition-colors">
               Cloud Sync
             </a>
+            <a href="#website-development" className="text-sm font-semibold text-slate-600 hover:text-teal-600 transition-colors">
+              Websites
+            </a>
             <a href="#pricing" className="text-sm font-semibold text-slate-600 hover:text-teal-600 transition-colors">
               Pricing
             </a>

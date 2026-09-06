@@ -4,6 +4,7 @@ import { HeroSection } from './components/HeroSection';
 import { InteractiveDemo } from './components/InteractiveDemo';
 import { FeaturesSection } from './components/FeaturesSection';
 import { ArchitectureShowcase } from './components/ArchitectureShowcase';
+import { WebsiteDevSection } from './components/WebsiteDevSection';
 import { PricingSection } from './components/PricingSection';
 import { FaqSection } from './components/FaqSection';
 import { ContactModal } from './components/ContactModal';
@@ -12,7 +13,7 @@ import { CoffeeBrewerWidget } from './components/CoffeeBrewerWidget';
 
 export function App() {
   const [isContactOpen, setIsContactOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState('Cloud Sync');
+  const [selectedPlan, setSelectedPlan] = useState('Pro');
 
   const handleOpenDemo = () => {
     const el = document.getElementById('interactive-demo');
@@ -21,8 +22,10 @@ export function App() {
     }
   };
 
-  const handleSelectPlan = (plan: string) => {
-    setSelectedPlan(plan);
+  const handleSelectPlan = (plan?: string) => {
+    if (plan) {
+      setSelectedPlan(plan);
+    }
     setIsContactOpen(true);
   };
 
@@ -53,6 +56,10 @@ export function App() {
 
         {/* Architecture Breakdown */}
         <ArchitectureShowcase />
+
+        {/* Pricing Tiers */}
+        {/* Custom Website Development & Maintenance */}
+        <WebsiteDevSection onOpenContact={handleSelectPlan} />
 
         {/* Pricing Tiers */}
         <PricingSection onSelectPlan={handleSelectPlan} />
