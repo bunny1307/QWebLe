@@ -55,7 +55,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, def
         ) : (
           <>
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-2xl bg-teal-500 p-1.5 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-white border border-slate-200/90 p-1.5 shadow-sm flex items-center justify-center shrink-0">
                 <img src={logoImg} alt="QWeble" className="w-full h-full object-contain" />
               </div>
               <div>

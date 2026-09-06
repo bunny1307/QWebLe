@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, Sparkles, Globe, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Check, Sparkles } from 'lucide-react';
 
 interface PricingSectionProps {
   onSelectPlan: (planName: string) => void;
@@ -170,33 +170,6 @@ export const PricingSection: React.FC<PricingSectionProps> = ({ onSelectPlan }) 
               </div>
             );
           })}
-        </div>
-
-        {/* Website Development Spotlight in Pricing */}
-        <div className="mt-14 max-w-6xl mx-auto clay-card p-6 sm:p-8 bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 text-white border border-indigo-500/30 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-indigo-500/20 border border-indigo-400/30 flex items-center justify-center shrink-0 text-indigo-400 shadow-inner">
-              <Globe className="w-7 h-7" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <h4 className="text-lg font-black text-white">Looking for a Custom Restaurant Website?</h4>
-                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-indigo-500/30 text-indigo-300 border border-indigo-400/40">
-                  Full Service
-                </span>
-              </div>
-              <p className="text-slate-300 text-xs sm:text-sm font-medium max-w-2xl">
-                We also design, engineer, host, and continuously maintain custom websites & digital menus for your brand. Tailored to your exact requirements.
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => onSelectPlan('Custom Website Development')}
-            className="shrink-0 clay-btn-primary px-6 py-3 text-xs sm:text-sm font-extrabold flex items-center gap-2 cursor-pointer whitespace-nowrap bg-gradient-to-r from-indigo-500 to-teal-400"
-          >
-            <span>Inquire About Websites</span>
-            <ArrowRight className="w-4 h-4" />
-          </button>
         </div>
       </div>
     </section>

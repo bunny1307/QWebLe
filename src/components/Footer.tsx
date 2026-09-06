@@ -14,7 +14,7 @@ export const Footer: React.FC = () => {
           {/* Brand Info */}
           <div className="md:col-span-2">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-teal-500 to-emerald-400 p-1.5 shadow-md flex items-center justify-center">
+              <div className="w-10 h-10 rounded-2xl bg-white border border-slate-200/90 p-1.5 shadow-sm flex items-center justify-center">
                 <img src={logoImg} alt="QWeble Logo" className="w-full h-full object-contain" />
               </div>
               <span className="text-2xl font-black tracking-tight text-slate-900">

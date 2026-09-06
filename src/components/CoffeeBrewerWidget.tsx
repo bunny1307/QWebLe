@@ -190,7 +190,7 @@ export const CoffeeBrewerWidget: React.FC = () => {
 
               {/* QWeble Laser-Etched Metallic Logo Badge */}
               <div className="relative z-10 px-2 py-0.5 rounded bg-gradient-to-b from-[#f8fafc]/90 via-[#e2e8f0]/80 to-[#cbd5e1]/90 border border-white/60 shadow-[0_1px_2px_rgba(0,0,0,0.15)] flex items-center gap-1.5">
-                <div className="w-4 h-4 rounded-md bg-gradient-to-tr from-[#00B894] to-[#00D2A0] p-0.5 flex items-center justify-center shadow-sm">
+                <div className="w-4 h-4 rounded-md bg-white border border-slate-200/80 p-0.5 flex items-center justify-center shadow-xs">
                   <img src={logoImg} alt="QWeble" className="w-full h-full object-contain" />
                 </div>
                 <span className="text-[9px] font-black text-slate-900 tracking-tight leading-none">
