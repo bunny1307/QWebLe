@@ -42,7 +42,9 @@ export default function App() {
         setTimeout(() => {
           const el = document.getElementById(sectionId);
           if (el) {
-            el.scrollIntoView({ behavior: 'smooth' });
+            const yOffset = -90;
+            const y = el.getBoundingClientRect().top + window.pageYOffset + yOffset;
+            window.scrollTo({ top: y, behavior: 'smooth' });
           }
         }, 100);
       } else {
