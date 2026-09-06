@@ -8,7 +8,7 @@ import {
   Smartphone, 
   Palette, 
   Wrench, 
-  Layers, 
+ 
   ArrowRight, 
   ArrowLeft,
   CheckCircle2, 
@@ -71,27 +71,6 @@ export const WebDevPage: React.FC<WebDevPageProps> = ({ onBackToHome, onOpenCont
       title: 'Local SEO & Google Maps',
       description: 'Engineered with Schema.org culinary markup so local foodies and hungry travelers discover your tables first.',
       perks: ['Google Search Menu Schema', 'Geo-Targeted Local Tags', 'Optimized Core Web Vitals'],
-    },
-  ];
-
-  const showcaseProjects = [
-    {
-      name: 'The Neon Skewer · Yakitori Bar',
-      badge: 'CYBER-DINER',
-      tech: 'React · Tailwind · Edge CDN',
-      desc: 'Dark cyberpunk gastro-bar web app with neon menus, live waitlist counter, and instant table reservation.',
-    },
-    {
-      name: 'Artisan Bloom · Botanical Cafe',
-      badge: 'CLAY-ORGANIC',
-      tech: 'Next.js · Framer Motion',
-      desc: 'Puffy soft clay aesthetic with interactive latte art gallery and seasonal bean subscription portal.',
-    },
-    {
-      name: 'Bao & Beyond · Cloud Kitchen Chain',
-      badge: 'MULTI-OUTLET',
-      tech: 'QWeble POS Bridge · UPI FastPay',
-      desc: 'High-volume multi-location direct ordering portal generating 400+ daily orders with zero third-party commission.',
     },
   ];
 
@@ -213,39 +192,6 @@ export const WebDevPage: React.FC<WebDevPageProps> = ({ onBackToHome, onOpenCont
                       </li>
                     ))}
                   </ul>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Featured Concepts Showcase */}
-        <div className="mb-20">
-          <div className="text-center max-w-2xl mx-auto mb-12">
-            <div className="inline-flex items-center gap-2 px-3 py-1 clay-pill text-xs font-mono font-bold text-teal-700 mb-2">
-              <Layers className="w-3.5 h-3.5 text-teal-500" />
-              PORTFOLIO_CONCEPTS
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-3">
-              Crafted For Real Hospitality
-            </h2>
-            <p className="text-slate-600 font-medium text-sm sm:text-base">
-              Explore bespoke layouts engineered specifically for dining, takeaway speed, and visual appetite.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {showcaseProjects.map((p, idx) => (
-              <div key={idx} className="clay-card p-6 bg-white flex flex-col justify-between hover:shadow-xl transition-all">
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-teal-500/10 text-teal-700 border border-teal-500/20">
-                      {p.badge}
-                    </span>
-                    <span className="font-mono text-[10px] text-slate-400">{p.tech}</span>
-                  </div>
-                  <h3 className="text-lg font-black text-slate-900 mb-2">{p.name}</h3>
-                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">{p.desc}</p>
                 </div>
               </div>
             ))}
