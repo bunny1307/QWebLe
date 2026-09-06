@@ -188,6 +188,91 @@ export const WebDevPage: React.FC<WebDevPageProps> = ({ onBackToHome, onOpenCont
           </div>
         </div>
 
+        
+        {/* Traditional Agency vs QWeble Comparison Section */}
+        <div className="mb-20">
+          <div className="text-center max-w-2xl mx-auto mb-12">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 clay-pill text-xs font-mono font-bold text-teal-800 border border-teal-500/30 mb-3 bg-teal-50/50">
+              <Sparkles className="w-3.5 h-3.5 text-teal-600" />
+              <span>THE QWEBLE ADVANTAGE</span>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-3">
+              Traditional Agency vs. QWeble
+            </h2>
+            <p className="text-slate-600 font-medium text-sm sm:text-base">
+              Why restaurants choose our dedicated web engineering partnership over detached, one-off agencies.
+            </p>
+          </div>
+
+          <div className="clay-card p-6 sm:p-10 bg-white max-w-5xl mx-auto overflow-hidden shadow-xl border border-slate-200/80">
+            {/* Headers */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-6 border-b border-slate-100">
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-200/60">
+                <span className="font-black text-base sm:text-lg text-slate-700">Traditional Agency</span>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-100 text-rose-700 border border-rose-200">
+                  Outdated
+                </span>
+              </div>
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-teal-500/10 via-emerald-500/10 to-teal-500/15 border border-teal-500/30">
+                <span className="font-black text-base sm:text-lg text-teal-950">QWeble</span>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-teal-500 text-white shadow-xs">
+                  Full Service
+                </span>
+              </div>
+            </div>
+
+            {/* Comparison Rows */}
+            <div className="divide-y divide-slate-100 mt-2">
+              {[
+                {
+                  traditional: 'Website is separate from operations',
+                  qweble: 'Built around your restaurant workflow',
+                },
+                {
+                  traditional: 'Manual menu changes',
+                  qweble: 'Centralized menu management',
+                },
+                {
+                  traditional: 'Generic templates',
+                  qweble: 'Custom restaurant UX',
+                },
+                {
+                  traditional: 'Hosting is your problem',
+                  qweble: 'Fully managed',
+                },
+                {
+                  traditional: 'Website only',
+                  qweble: 'Website + digital menu + QWeble ecosystem',
+                },
+                {
+                  traditional: 'Slow change requests',
+                  qweble: 'Rapid updates',
+                },
+                {
+                  traditional: 'Built once, forgotten',
+                  qweble: 'Continuously maintained',
+                },
+              ].map((row, idx) => (
+                <div key={idx} className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-6 py-4 items-center">
+                  {/* Traditional Agency Side */}
+                  <div className="flex items-start gap-3 text-slate-500 text-xs sm:text-sm font-medium pl-2">
+                    <span className="w-5 h-5 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center shrink-0 mt-0.5 text-xs font-bold border border-rose-200/70">
+                      ✕
+                    </span>
+                    <span>{row.traditional}</span>
+                  </div>
+
+                  {/* QWeble Side */}
+                  <div className="flex items-start gap-3 text-slate-900 text-xs sm:text-sm font-bold bg-teal-50/40 hover:bg-teal-50/70 transition-colors p-3 rounded-xl border border-teal-200/50 shadow-xs">
+                    <CheckCircle2 className="w-5 h-5 text-teal-600 shrink-0 mt-0.5" />
+                    <span className="text-teal-950 font-extrabold">{row.qweble}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
         {/* The 4-Step Process */}
         <div className="clay-card p-8 sm:p-12 mb-20 bg-white">
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 text-center mb-10">
