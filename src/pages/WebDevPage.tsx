@@ -1,23 +1,18 @@
 import React, { useEffect } from 'react';
 import { 
   Globe, 
-  Code, 
   Sparkles, 
   ShieldCheck, 
-  Zap, 
   Smartphone, 
   Palette, 
   Wrench, 
- 
   ArrowRight, 
   ArrowLeft,
   CheckCircle2, 
   Terminal, 
-  Cpu, 
   Server, 
-  ExternalLink 
+  Gauge
 } from 'lucide-react';
-import logoImg from '../assets/logo.png';
 
 interface WebDevPageProps {
   onBackToHome: () => void;
@@ -35,42 +30,42 @@ export const WebDevPage: React.FC<WebDevPageProps> = ({ onBackToHome, onOpenCont
       tag: 'AESTHETIC_ENGINE',
       title: 'Bespoke Brand UI/UX',
       description: 'Handcrafted around your restaurant ambiance, typography, and food photography. Zero cookie-cutter templates.',
-      perks: ['Custom 3D & Clay Accents', 'Brand Match Color Palette', 'Fast Mobile-First UX'],
+      perks: ['Custom 3D & Clay Accents', 'Brand-Matched Color Palette', 'Fluid Touch-First UX'],
     },
     {
       icon: <Smartphone className="w-6 h-6 text-emerald-500" />,
-      tag: 'MENU_PIPELINE',
+      tag: 'MENU_SHOWCASE',
       title: 'Interactive Digital Menus',
-      description: 'High-res dynamic food showcases with instant category filtering, allergen flags, and live dish availability.',
-      perks: ['Veg/Non-Veg/Vegan Tags', 'Photo Lightbox & Videos', 'Chef Special Highlights'],
+      description: 'High-res dynamic food showcases with instant category filtering, dietary allergen flags, and live dish highlights.',
+      perks: ['Veg/Non-Veg/Vegan Tags', 'Photo Lightbox & Media', 'Chef Special Highlights'],
     },
     {
-      icon: <Cpu className="w-6 h-6 text-indigo-500" />,
-      tag: 'POS_GATEWAY',
-      title: 'Direct Takeaway Ordering',
-      description: 'Commission-free direct customer orders routed directly into your QWeble kitchen display system or counter terminal.',
-      perks: ['Zero Aggregator 30% Cut', 'Dynamic Razorpay / UPI QR', 'Direct Token Assignment'],
+      icon: <Gauge className="w-6 h-6 text-indigo-500" />,
+      tag: 'SPEED_ENGINE',
+      title: 'Ultra-Fast Performance',
+      description: 'Engineered for sub-second load times on mobile networks so hungry customers never bounce from sluggish pages.',
+      perks: ['Sub-500ms Edge Loading', 'Optimized Core Web Vitals', 'Fluid 60 FPS Micro-Interactions'],
     },
     {
       icon: <Server className="w-6 h-6 text-amber-500" />,
       tag: 'MANAGED_OPS',
       title: '100% Fully Managed DevOps',
-      description: 'We handle enterprise cloud hosting, SSL certificates, daily automated backups, and 99.99% uptime monitoring.',
-      perks: ['Global High-Speed CDN', 'Automated SSL Renewal', 'DDoS & Cyber Protection'],
+      description: 'We handle enterprise cloud hosting, SSL encryption, daily automated backups, and 99.99% uptime monitoring.',
+      perks: ['Global High-Speed CDN', 'Automated SSL Renewal', 'DDoS & Security Protection'],
     },
     {
       icon: <Wrench className="w-6 h-6 text-purple-500" />,
       tag: 'RAPID_DISPATCH',
-      title: 'Routine Menu Maintenance',
-      description: 'Need to update seasonal pricing, add weekend combos, or swap a hero dish? WhatsApp us and we push it live.',
-      perks: ['Turnaround in Under 2 Hours', 'Price & Stock Sync', 'Holiday Banner Updates'],
+      title: 'Ongoing Menu Maintenance',
+      description: 'Need to update seasonal pricing, add weekend combos, or swap photography? Message us and we push it live for you.',
+      perks: ['Turnaround in Under 2 Hours', 'Price & Content Updates', 'Holiday Banner Refreshes'],
     },
     {
       icon: <Globe className="w-6 h-6 text-cyan-500" />,
       tag: 'LOCAL_RADAR',
       title: 'Local SEO & Google Maps',
-      description: 'Engineered with Schema.org culinary markup so local foodies and hungry travelers discover your tables first.',
-      perks: ['Google Search Menu Schema', 'Geo-Targeted Local Tags', 'Optimized Core Web Vitals'],
+      description: 'Engineered with Schema.org culinary markup so local foodies and hungry travelers discover your venue first.',
+      perks: ['Google Search Menu Schema', 'Geo-Targeted Local Tags', 'Rich Social Share Previews'],
     },
   ];
 
@@ -85,13 +80,8 @@ export const WebDevPage: React.FC<WebDevPageProps> = ({ onBackToHome, onOpenCont
             className="clay-pill px-4 py-2 text-xs font-black text-slate-700 hover:text-teal-600 flex items-center gap-2 cursor-pointer transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>Return to POS Home</span>
+            <span>Return to Main Site</span>
           </button>
-
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/30 text-teal-700 text-xs font-mono font-bold">
-            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-            <span>WEBDEV_SUITE :: ACTIVE</span>
-          </div>
         </div>
 
         {/* Hero Section: Cyberpunk Telemetry + Claymorphic Depth */}
@@ -111,7 +101,7 @@ export const WebDevPage: React.FC<WebDevPageProps> = ({ onBackToHome, onOpenCont
             </h1>
 
             <p className="text-slate-600 text-base sm:text-xl font-medium leading-relaxed mb-8">
-              Don’t settle for generic templates that crash on smartphones. We design, deploy, and continuously maintain high-performance websites & digital menus for restaurants, cafes, and cloud kitchens.
+              Don’t settle for generic templates that crash on smartphones. We design, deploy, host, and continuously maintain high-performance websites and interactive digital menus for restaurants, cafes, and food businesses.
             </p>
 
             <div className="flex flex-wrap items-center gap-4">
@@ -127,7 +117,7 @@ export const WebDevPage: React.FC<WebDevPageProps> = ({ onBackToHome, onOpenCont
                 onClick={onBackToHome}
                 className="clay-btn-secondary px-6 py-4 text-sm font-bold flex items-center gap-2 cursor-pointer"
               >
-                <span>Explore POS System</span>
+                <span>Back to Main Site</span>
               </button>
             </div>
           </div>
@@ -145,11 +135,11 @@ export const WebDevPage: React.FC<WebDevPageProps> = ({ onBackToHome, onOpenCont
             <span className="text-teal-400 font-bold text-xs">STATUS: 100% OPERATIONAL</span>
           </div>
           <div className="space-y-2 text-slate-300">
-            <p className="text-slate-400"># QWeble Full-Service Culinary Web Architecture</p>
-            <p><span className="text-teal-400">&gt; stack:</span> React, Vite, Tailwind CSS, Edge CDN, Global SSL, SQLite/Postgres Bridge</p>
-            <p><span className="text-teal-400">&gt; maintenance:</span> 100% Managed — zero terminal commands required from restaurant owners</p>
-            <p><span className="text-teal-400">&gt; menu_sync:</span> Instant push updates for seasonal specials, new combos &amp; price revisions</p>
-            <p className="text-emerald-400 font-bold">✔ Deploy target: Custom domain (e.g., yourrestaurant.com) with 99.99% uptime guarantee</p>
+            <p className="text-slate-400"># QWeble Full-Service Web Engineering & Hosting</p>
+            <p><span className="text-teal-400">&gt; stack:</span> Modern React, Vite, Tailwind CSS, Global Edge CDN, Automated SSL</p>
+            <p><span className="text-teal-400">&gt; maintenance:</span> 100% Managed — zero terminal commands or server hassles for owners</p>
+            <p><span className="text-teal-400">&gt; menu_updates:</span> Instant turnaround for seasonal specials, new combos &amp; price revisions</p>
+            <p className="text-emerald-400 font-bold">✔ Deploy target: Custom domain (e.g., yourbrand.com) with 99.99% uptime guarantee</p>
           </div>
         </div>
 
@@ -160,7 +150,7 @@ export const WebDevPage: React.FC<WebDevPageProps> = ({ onBackToHome, onOpenCont
               Full-Service Web Lifecycle
             </h2>
             <p className="text-slate-600 font-medium text-sm sm:text-base">
-              Everything from original concept and interactive menus to ongoing maintenance and hosting.
+              Everything from initial branding and interactive digital menus to high-speed hosting and ongoing maintenance.
             </p>
           </div>
 
@@ -209,8 +199,8 @@ export const WebDevPage: React.FC<WebDevPageProps> = ({ onBackToHome, onOpenCont
               <div className="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-200 text-teal-700 font-black text-lg flex items-center justify-center mb-4 shadow-sm">
                 01
               </div>
-              <h4 className="font-black text-slate-900 mb-1">Brand & Menu Discovery</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">We review your existing menu, logo, photo assets, and target dining audience.</p>
+              <h4 className="font-black text-slate-900 mb-1">Brand & Concept Discovery</h4>
+              <p className="text-xs text-slate-500 leading-relaxed">We review your existing menu, branding, photos, and unique culinary style.</p>
             </div>
 
             <div className="flex flex-col items-center text-center">
@@ -218,15 +208,15 @@ export const WebDevPage: React.FC<WebDevPageProps> = ({ onBackToHome, onOpenCont
                 02
               </div>
               <h4 className="font-black text-slate-900 mb-1">Interactive Prototype</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">We build a live interactive preview for your phone and desktop to review and refine.</p>
+              <p className="text-xs text-slate-500 leading-relaxed">We build an interactive preview for desktop and mobile for your review and feedback.</p>
             </div>
 
             <div className="flex flex-col items-center text-center">
               <div className="w-12 h-12 rounded-2xl bg-teal-50 border border-teal-200 text-teal-700 font-black text-lg flex items-center justify-center mb-4 shadow-sm">
                 03
               </div>
-              <h4 className="font-black text-slate-900 mb-1">POS & Direct Ordering Wire</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">Optional integration with your QWeble offline/online POS token and payment flow.</p>
+              <h4 className="font-black text-slate-900 mb-1">Performance & SEO Tuning</h4>
+              <p className="text-xs text-slate-500 leading-relaxed">We fine-tune sub-second load times, Google Maps search tags, and mobile responsive polish.</p>
             </div>
 
             <div className="flex flex-col items-center text-center">
@@ -234,7 +224,7 @@ export const WebDevPage: React.FC<WebDevPageProps> = ({ onBackToHome, onOpenCont
                 04
               </div>
               <h4 className="font-black text-slate-900 mb-1">Launch & 24/7 Managed Care</h4>
-              <p className="text-xs text-slate-500 leading-relaxed">We publish your domain, enable SSL, and continuously handle all ongoing menu edits.</p>
+              <p className="text-xs text-slate-500 leading-relaxed">We publish your domain, enable SSL, and continuously handle all ongoing menu updates.</p>
             </div>
           </div>
         </div>
@@ -249,7 +239,7 @@ export const WebDevPage: React.FC<WebDevPageProps> = ({ onBackToHome, onOpenCont
               Ready to Upgrade Your Food Brand Online?
             </h2>
             <p className="text-slate-300 text-sm sm:text-base font-normal leading-relaxed mb-8">
-              Tell us about your restaurant, cafe, or food concept. Our design and engineering team will tailor an end-to-end proposal with zero obligation.
+              Tell us about your restaurant, cafe, or culinary concept. Our design and engineering team will tailor an end-to-end proposal with zero obligation.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               <button
@@ -263,7 +253,7 @@ export const WebDevPage: React.FC<WebDevPageProps> = ({ onBackToHome, onOpenCont
                 onClick={onBackToHome}
                 className="px-6 py-4 rounded-full text-sm font-bold bg-slate-800/80 hover:bg-slate-800 text-white border border-slate-700 transition-all cursor-pointer"
               >
-                Back to POS Platform
+                Back to Main Site
               </button>
             </div>
           </div>
