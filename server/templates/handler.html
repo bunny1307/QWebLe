@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QWeble Handler</title>
+  <style>
+    :root {
+      --bg: #f9fafb;
+      --card: #ffffff;
+      --border: #e5e7eb;
+      --text: #111827;
+      --text-muted: #6b7280;
+      --primary: #0d9488;
+      --primary-hover: #0f766e;
+      --danger: #ef4444;
+      --success: #10b981;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      font-size: 14px;
+      padding-bottom: 60px;
+    }
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-badge {
+      font-size: 11px;
+      font-weight: 600;
+      background: #e0f2fe;
+      color: #0369a1;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .status-badge {
+      font-size: 12px;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      background: #f3f4f6;
+      border: 1px solid var(--border);
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot-green { background: var(--success); }
+    .dot-red { background: var(--danger); }
+
+    .btn {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s;
+    }
+    .btn-primary { background: var(--primary); color: #ffffff; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline { background: #ffffff; border-color: var(--border); color: var(--text); }
+    .btn-outline:hover { background: #f3f4f6; }
+    .btn-danger { background: #fee2e2; color: #b91c1c; border-color: #fca5a5; }
+    .btn-danger:hover { background: #fecaca; }
+    .btn-sm { padding: 4px 8px; font-size: 12px; }
+
+    main {
+      max-width: 1120px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    .tab-btn {
+      padding: 10px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Card Box */
+    .box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .box-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    th {
+      background: #f9fafb;
+      padding: 10px 12px;
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+    tr:hover td {
+      background: #fdfdfd;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 14px;
+    }
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 13px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: inherit;
+      background: #ffffff;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    textarea {
+      resize: vertical;
+    }
+    .grid-2 {
+      display: grid;
+      grid-cols: 2;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 16px;
+    }
+    .alert-success { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+    .alert-danger { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+
+    .help-text {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand-title">
+      <span>QWeble Handler</span>
+      <span class="brand-badge">Control Center</span>
+    </div>
+    <div class="header-actions">
+      <div id="s3-status-badge" class="status-badge">
+        <span class="dot dot-green"></span>
+        <span id="s3-status-text">Checking AWS S3...</span>
+      </div>
+      <button id="sync-btn" class="btn btn-primary" onclick="syncS3()">
+        <span id="sync-btn-text">Sync & Publish to S3</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div id="alert-box"></div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('inquiries')">Contact Inquiries (<span id="inquiry-count">0</span>)</button>
+      <button class="tab-btn" onclick="switchTab('pricing')">Prices & Features</button>
+      <button class="tab-btn" onclick="switchTab('faqs')">FAQs</button>
+      <button class="tab-btn" onclick="switchTab('system')">S3 & System</button>
+    </div>
+
+    <!-- TAB 1: INQUIRIES -->
+    <div id="tab-inquiries" class="tab-content active">
+      <div class="box">
+        <div class="box-title">
+          <span>Customer Contact Submissions</span>
+          <button class="btn btn-outline btn-sm" onclick="loadInquiries()">Refresh</button>
+        </div>
+        <div style="overflow-x: auto;">
+          <table>
+            <thead>
+              <tr>
+                <th>Date / Time</th>
+                <th>Name</th>
+                <th>Restaurant</th>
+                <th>Phone</th>
+                <th>Outlets</th>
+                <th>Selected Plan</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="inquiries-tbody">
+              <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">Loading inquiries...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: PRICING -->
+    <div id="tab-pricing" class="tab-content">
+      <div class="box">
+        <div class="box-title">
+          <span>Pricing Tiers & Feature Bullets</span>
+          <span style="font-size: 12px; color: var(--text-muted); font-weight: normal;">Saved into SQLite & pushed to S3</span>
+        </div>
+        <div id="pricing-grid" class="grid-3">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: FAQS -->
+    <div id="tab-faqs" class="tab-content">
+      <div class="box">
+        <div class="box-title">
+          <span>Add New FAQ</span>
+        </div>
+        <form id="add-faq-form" onsubmit="addFaq(event)">
+          <div class="form-group">
+            <label>Question</label>
+            <input type="text" id="new-faq-q" required placeholder="e.g. Can I run QWeble without internet?" />
+          </div>
+          <div class="form-group">
+            <label>Answer</label>
+            <textarea id="new-faq-a" rows="3" required placeholder="Detailed response for customers..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary btn-sm">+ Add Question</button>
+        </form>
+      </div>
+
+      <div class="box">
+        <div class="box-title">
+          <span>Existing FAQs</span>
+          <span id="faq-count" style="font-size: 12px; color: var(--text-muted);">0 items</span>
+        </div>
+        <div id="faqs-list">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: SYSTEM & S3 -->
+    <div id="tab-system" class="tab-content">
+      <div class="box">
+        <div class="box-title">
+          <span>AWS S3 & Database Information</span>
+        </div>
+        <div style="font-size: 13px; line-height: 1.8;">
+          <p><strong>Database:</strong> <code>qweble_handling_data.db</code> (SQLite)</p>
+          <p><strong>S3 Bucket:</strong> <code id="sys-bucket">...</code></p>
+          <p><strong>S3 Region:</strong> <code id="sys-region">...</code></p>
+          <p><strong>S3 Dedicated Folder:</strong> <code id="sys-folder">...</code></p>
+          <p><strong>Public S3 URL:</strong> <a id="sys-url" href="#" target="_blank" style="color: var(--primary); text-decoration: underline;">View Live S3 JSON</a></p>
+          <p><strong>Last Synced At:</strong> <span id="sys-last-sync">Not synced yet</span></p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    let currentData = { inquiries: [], pricing: [], faqs: [] };
+
+    function showAlert(msg, isError = false) {
+      const box = document.getElementById('alert-box');
+      box.innerHTML = `<div class="alert ${isError ? 'alert-danger' : 'alert-success'}">${msg}</div>`;
+      setTimeout(() => { box.innerHTML = ''; }, 4000);
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      event.target.classList.add('active');
+      document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    async function checkStatus() {
+      try {
+        const res = await fetch('/api/admin/status');
+        const data = await res.json();
+        const badge = document.getElementById('s3-status-badge');
+        const text = document.getElementById('s3-status-text');
+        
+        if (data.s3 && data.s3.connected) {
+          badge.innerHTML = `<span class="dot dot-green"></span><span>AWS S3: ${data.s3.bucket}/${data.s3.folder}</span>`;
+          document.getElementById('sys-bucket').textContent = data.s3.bucket;
+          document.getElementById('sys-region').textContent = data.s3.region;
+          document.getElementById('sys-folder').textContent = data.s3.folder;
+          const urlLink = document.getElementById('sys-url');
+          urlLink.href = data.s3.public_url;
+          urlLink.textContent = data.s3.public_url;
+        } else {
+          badge.innerHTML = `<span class="dot dot-red"></span><span>AWS S3 Disconnected</span>`;
+        }
+
+        if (data.last_sync) {
+          document.getElementById('sys-last-sync').textContent = new Date(data.last_sync).toLocaleString();
+        }
+      } catch (err) {
+        console.error("Status check failed", err);
+      }
+    }
+
+    async function loadInquiries() {
+      try {
+        const res = await fetch('/api/admin/inquiries');
+        const data = await res.json();
+        currentData.inquiries = data;
+        document.getElementById('inquiry-count').textContent = data.length;
+        const tbody = document.getElementById('inquiries-tbody');
+        
+        if (data.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 24px;">No inquiries received yet. Submissions from qweble.com will appear here.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = data.map(item => `
+          <tr>
+            <td style="white-space: nowrap; color: var(--text-muted);">${new Date(item.created_at).toLocaleString()}</td>
+            <td><strong>${escapeHtml(item.name)}</strong></td>
+            <td>${escapeHtml(item.restaurant)}</td>
+            <td><a href="tel:${escapeHtml(item.phone)}" style="color: var(--primary); text-decoration: none; font-weight: 600;">${escapeHtml(item.phone)}</a></td>
+            <td>${escapeHtml(item.outlets || '1')}</td>
+            <td><span style="background: #f3f4f6; padding: 2px 6px; border-radius: 4px; font-weight: 600;">${escapeHtml(item.plan || 'Pro')}</span></td>
+            <td>
+              <button class="btn btn-danger btn-sm" onclick="deleteInquiry(${item.id})">Delete</button>
+            </td>
+          </tr>
+        `).join('');
+      } catch (err) {
+        console.error("Failed to load inquiries", err);
+      }
+    }
+
+    async function deleteInquiry(id) {
+      if (!confirm("Are you sure you want to delete this inquiry record?")) return;
+      try {
+        const res = await fetch('/api/admin/inquiries/' + id, { method: 'DELETE' });
+        const result = await res.json();
+        if (result.success) {
+          showAlert("Inquiry deleted.");
+          loadInquiries();
+        } else {
+          showAlert("Error deleting inquiry", true);
+        }
+      } catch (err) {
+        showAlert("Server connection failed", true);
+      }
+    }
+
+    async function loadPricing() {
+      try {
+        const res = await fetch('/api/admin/pricing');
+        const data = await res.json();
+        currentData.pricing = data;
+        const grid = document.getElementById('pricing-grid');
+
+        grid.innerHTML = data.map(plan => `
+          <div class="box" style="margin-bottom: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <h3 style="font-size: 18px; font-weight: 800;">${plan.name} Tier</h3>
+              <span style="font-size: 11px; background: #e5e7eb; padding: 2px 6px; border-radius: 4px; font-weight: 600;">${plan.id}</span>
+            </div>
+            <form onsubmit="savePlan(event, '${plan.id}')">
+              <div class="grid-2">
+                <div class="form-group">
+                  <label>Monthly Price (₹)</label>
+                  <input type="number" id="price-m-${plan.id}" value="${plan.price_monthly}" required />
+                </div>
+                <div class="form-group">
+                  <label>Annual Price (₹/mo)</label>
+                  <input type="number" id="price-a-${plan.id}" value="${plan.price_annual}" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Tagline</label>
+                <input type="text" id="tagline-${plan.id}" value="${escapeHtml(plan.tagline || '')}" />
+              </div>
+              <div class="form-group">
+                <label>Features Included (1 per line)</label>
+                <textarea id="features-${plan.id}" rows="6">${(JSON.parse(plan.features || '[]')).join('\n')}</textarea>
+                <div class="help-text">Enter each bullet feature on a new line</div>
+              </div>
+              <div class="form-group">
+                <label>Not Included (1 per line)</label>
+                <textarea id="not-inc-${plan.id}" rows="3">${(JSON.parse(plan.not_included || '[]')).join('\n')}</textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-sm" style="width: 100%;">Save ${plan.name} Tier</button>
+            </form>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error("Failed to load pricing", err);
+      }
+    }
+
+    async function savePlan(e, planId) {
+      e.preventDefault();
+      const monthly = parseInt(document.getElementById(`price-m-${planId}`).value);
+      const annual = parseInt(document.getElementById(`price-a-${planId}`).value);
+      const tagline = document.getElementById(`tagline-${planId}`).value;
+      const featuresRaw = document.getElementById(`features-${planId}`).value;
+      const notIncRaw = document.getElementById(`not-inc-${planId}`).value;
+
+      const features = featuresRaw.split('\n').map(s => s.trim()).filter(Boolean);
+      const notIncluded = notIncRaw.split('\n').map(s => s.trim()).filter(Boolean);
+
+      try {
+        const res = await fetch(`/api/admin/pricing/${planId}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            price_monthly: monthly,
+            price_annual: annual,
+            tagline: tagline,
+            features: features,
+            not_included: notIncluded,
+          })
+        });
+        const result = await res.json();
+        if (result.success) {
+          showAlert(`Saved ${planId.toUpperCase()} tier! Click "Sync & Publish to S3" to update the live website.`);
+        } else {
+          showAlert("Error saving tier: " + (result.error || "Unknown"), true);
+        }
+      } catch (err) {
+        showAlert("Failed to communicate with handler server.", true);
+      }
+    }
+
+    async function loadFaqs() {
+      try {
+        const res = await fetch('/api/admin/faqs');
+        const data = await res.json();
+        currentData.faqs = data;
+        document.getElementById('faq-count').textContent = `${data.length} items`;
+        const list = document.getElementById('faqs-list');
+
+        list.innerHTML = data.map(faq => `
+          <div style="padding: 14px 0; border-bottom: 1px solid var(--border);">
+            <form onsubmit="saveFaq(event, ${faq.id})">
+              <div class="form-group">
+                <input type="text" id="faq-q-${faq.id}" value="${escapeHtml(faq.question)}" required style="font-weight: 700;" />
+              </div>
+              <div class="form-group">
+                <textarea id="faq-a-${faq.id}" rows="3" required>${escapeHtml(faq.answer)}</textarea>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <button type="submit" class="btn btn-outline btn-sm">Save Changes</button>
+                <button type="button" class="btn btn-danger btn-sm" onclick="deleteFaq(${faq.id})">Delete</button>
+              </div>
+            </form>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error("Failed to load FAQs", err);
+      }
+    }
+
+    async function addFaq(e) {
+      e.preventDefault();
+      const q = document.getElementById('new-faq-q').value.trim();
+      const a = document.getElementById('new-faq-a').value.trim();
+      try {
+        const res = await fetch('/api/admin/faqs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: q, answer: a })
+        });
+        const result = await res.json();
+        if (result.success) {
+          showAlert("New FAQ added! Click 'Sync & Publish to S3' to update the live website.");
+          document.getElementById('add-faq-form').reset();
+          loadFaqs();
+        } else {
+          showAlert("Error adding FAQ", true);
+        }
+      } catch (err) {
+        showAlert("Server error adding FAQ", true);
+      }
+    }
+
+    async function saveFaq(e, id) {
+      e.preventDefault();
+      const q = document.getElementById(`faq-q-${id}`).value.trim();
+      const a = document.getElementById(`faq-a-${id}`).value.trim();
+      try {
+        const res = await fetch(`/api/admin/faqs/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: q, answer: a })
+        });
+        const result = await res.json();
+        if (result.success) {
+          showAlert("FAQ updated!");
+        } else {
+          showAlert("Error updating FAQ", true);
+        }
+      } catch (err) {
+        showAlert("Server error updating FAQ", true);
+      }
+    }
+
+    async function deleteFaq(id) {
+      if (!confirm("Are you sure you want to delete this FAQ?")) return;
+      try {
+        const res = await fetch(`/api/admin/faqs/${id}`, { method: 'DELETE' });
+        const result = await res.json();
+        if (result.success) {
+          showAlert("FAQ deleted.");
+          loadFaqs();
+        } else {
+          showAlert("Error deleting FAQ", true);
+        }
+      } catch (err) {
+        showAlert("Server error", true);
+      }
+    }
+
+    async function syncS3() {
+      const btn = document.getElementById('sync-btn');
+      const text = document.getElementById('sync-btn-text');
+      text.textContent = 'Syncing to AWS S3...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/admin/sync-s3', { method: 'POST' });
+        const result = await res.json();
+        if (result.success) {
+          showAlert(`Successfully uploaded site-data.json to s3://${result.key}!`);
+          checkStatus();
+        } else {
+          showAlert("AWS S3 Sync failed: " + (result.error || "Check AWS credentials"), true);
+        }
+      } catch (err) {
+        showAlert("Sync failed: Network error", true);
+      } finally {
+        text.textContent = 'Sync & Publish to S3';
+        btn.disabled = false;
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Initialize
+    checkStatus();
+    loadInquiries();
+    loadPricing();
+    loadFaqs();
+  </script>
+</body>
+</html>
